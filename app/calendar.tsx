@@ -18,10 +18,11 @@ import { getMonthTitle } from '@/src/utils/calendar';
 export default function CalendarScreen() {
   const router = useRouter();
   const today = useMemo(() => new Date(), []);
+  const [month, setMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loadError, setLoadError] = useState('');
-  const monthTitle = getMonthTitle(today);
+  const monthTitle = getMonthTitle(month);
   const monthName = monthTitle.split(' ')[0].toLowerCase();
 
   useFocusEffect(
@@ -33,15 +34,21 @@ export default function CalendarScreen() {
     }, []),
   );
 
-  const monthAppointments = getAppointmentsForMonth(appointments, today);
+  const monthAppointments = getAppointmentsForMonth(appointments, month);
   const markedDays = getMarkedDays(monthAppointments);
-  const selectedAppointments = getAppointmentsForDay(
-    monthAppointments,
-    selectedDay,
-  );
+  const selectedAppointments = getAppointmentsForDay(monthAppointments, selectedDay);
+
+  function changeMonth(offset: number) {
+    const next = new Date(month.getFullYear(), month.getMonth() + offset, 1);
+    const isCurrentMonth =
+      next.getFullYear() === today.getFullYear() &&
+      next.getMonth() === today.getMonth();
+    setMonth(next);
+    setSelectedDay(isCurrentMonth ? today.getDate() : 1);
+  }
 
   function openNewAppointment() {
-    const date = new Date(today.getFullYear(), today.getMonth(), selectedDay, 12);
+    const date = new Date(month.getFullYear(), month.getMonth(), selectedDay, 12);
     router.push({ pathname: '/new-appointment', params: { date: date.toISOString() } });
   }
 
@@ -60,8 +67,16 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.monthCard}>
-        <Text style={styles.monthTitle}>{monthTitle}</Text>
-        <MonthGrid month={today} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
+        <View style={styles.monthHeader}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={styles.monthButton}>
+            <Text style={styles.monthArrow}>‹</Text>
+          </Pressable>
+          <Text style={styles.monthTitle}>{monthTitle}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={styles.monthButton}>
+            <Text style={styles.monthArrow}>›</Text>
+          </Pressable>
+        </View>
+        <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
       </View>
 
       <View style={styles.daySection}>
@@ -86,7 +101,10 @@ const styles = StyleSheet.create({
   title: { color: colors.textPrimary, fontSize: 30, fontWeight: '700' },
   headerSpacer: { width: 48 },
   monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 8, paddingHorizontal: 16, paddingVertical: 20 },
-  monthTitle: { color: colors.textPrimary, fontSize: 30, fontWeight: '700', marginBottom: 20, textTransform: 'capitalize' },
+  monthHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
+  monthButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
+  monthArrow: { color: colors.private, fontSize: 38, lineHeight: 40 },
+  monthTitle: { color: colors.textPrimary, fontSize: 30, fontWeight: '700', textTransform: 'capitalize' },
   daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 18, padding: 20 },
   dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
   errorText: { color: '#A33A3A', fontSize: 18, marginTop: 10 },
