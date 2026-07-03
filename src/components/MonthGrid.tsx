@@ -17,6 +17,7 @@ export function MonthGrid({
   onSelectDay,
 }: Props) {
   const days = getCalendarDays(month);
+  const compact = days.length === 42;
   const today = new Date();
   const showingCurrentMonth =
     month.getFullYear() === today.getFullYear() &&
@@ -37,7 +38,10 @@ export function MonthGrid({
           const marked = day ? markedDays.includes(day) : false;
 
           return (
-            <View key={`${day ?? 'empty'}-${index}`} style={styles.cell}>
+            <View
+              key={`${day ?? 'empty'}-${index}`}
+              style={[styles.cell, compact && styles.compactCell]}
+            >
               {day ? (
                 <Pressable
                   accessibilityRole="button"
@@ -81,6 +85,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: '14.2857%',
   },
+  compactCell: { height: 48 },
   dayButton: {
     alignItems: 'center',
     borderRadius: 22,
