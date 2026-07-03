@@ -4,7 +4,6 @@ import { colors } from '@/src/constants/colors';
 
 type Props = {
   title: string;
-  subtitle: string;
   accent: string;
   softBackground: string;
   icon: number;
@@ -13,7 +12,6 @@ type Props = {
 
 export function CalendarChoiceCard({
   title,
-  subtitle,
   accent,
   softBackground,
   icon,
@@ -22,7 +20,7 @@ export function CalendarChoiceCard({
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={`${title}. ${subtitle}`}
+      accessibilityLabel={title}
       onPress={onPress}
       style={({ pressed }) => [
         styles.card,
@@ -33,19 +31,11 @@ export function CalendarChoiceCard({
       <Image source={icon} style={styles.icon} />
       <Text
         adjustsFontSizeToFit
-        minimumFontScale={0.78}
+        minimumFontScale={0.82}
         numberOfLines={2}
         style={styles.title}
       >
         {title}
-      </Text>
-      <Text
-        adjustsFontSizeToFit
-        minimumFontScale={0.8}
-        numberOfLines={3}
-        style={styles.subtitle}
-      >
-        {subtitle}
       </Text>
       <View style={[styles.arrowCircle, { backgroundColor: accent }]}> 
         <Text style={styles.arrow}>›</Text>
@@ -60,7 +50,7 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     borderWidth: 1.5,
     flex: 1,
-    minHeight: 310,
+    minHeight: 270,
     paddingHorizontal: 12,
     paddingVertical: 24,
   },
@@ -70,22 +60,14 @@ const styles = StyleSheet.create({
   },
   icon: {
     height: 76,
-    marginBottom: 20,
+    marginBottom: 24,
     resizeMode: 'contain',
     width: 76,
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 26,
+    fontSize: 27,
     fontWeight: '700',
-    marginBottom: 14,
-    textAlign: 'center',
-  },
-  subtitle: {
-    color: colors.textSecondary,
-    fontSize: 17,
-    lineHeight: 22,
-    minHeight: 66,
     textAlign: 'center',
   },
   arrowCircle: {
