@@ -1,3 +1,4 @@
+import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -18,9 +19,8 @@ function getGreeting(date = new Date()) {
 }
 
 export default function WelcomeScreen() {
+  const router = useRouter();
   const [greeting, setGreeting] = useState(getGreeting());
-  const openPrivate = () => {};
-  const openWork = () => {};
 
   useEffect(() => {
     const timer = setInterval(() => setGreeting(getGreeting()), 60_000);
@@ -46,14 +46,14 @@ export default function WelcomeScreen() {
             accent={colors.private}
             softBackground={colors.privateSoft}
             icon={privateIcon}
-            onPress={openPrivate}
+            onPress={() => router.push('/calendar')}
           />
           <CalendarChoiceCard
             title="En Ny Dag"
             accent={colors.work}
             softBackground={colors.workSoft}
             icon={workIcon}
-            onPress={openWork}
+            onPress={() => {}}
           />
         </View>
 
