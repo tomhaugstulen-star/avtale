@@ -7,6 +7,7 @@ type Props = {
   month: Date;
   selectedDay: number | null;
   markedDays?: number[];
+  accentColor?: string;
   onSelectDay: (day: number) => void;
 };
 
@@ -14,6 +15,7 @@ export function MonthGrid({
   month,
   selectedDay,
   markedDays = [],
+  accentColor = colors.private,
   onSelectDay,
 }: Props) {
   const days = getCalendarDays(month);
@@ -38,10 +40,7 @@ export function MonthGrid({
           const marked = day ? markedDays.includes(day) : false;
 
           return (
-            <View
-              key={`${day ?? 'empty'}-${index}`}
-              style={[styles.cell, compact && styles.compactCell]}
-            >
+            <View key={`${day ?? 'empty'}-${index}`} style={[styles.cell, compact && styles.compactCell]}>
               {day ? (
                 <Pressable
                   accessibilityRole="button"
@@ -49,15 +48,13 @@ export function MonthGrid({
                   onPress={() => onSelectDay(day)}
                   style={[
                     styles.dayButton,
-                    isToday && !selected && styles.today,
-                    selected && styles.selectedDay,
+                    isToday && !selected && { borderColor: accentColor, borderWidth: 2 },
+                    selected && { backgroundColor: accentColor },
                   ]}
                 >
-                  <Text style={[styles.dayText, selected && styles.selectedText]}>
-                    {day}
-                  </Text>
+                  <Text style={[styles.dayText, selected && styles.selectedText]}>{day}</Text>
                   {marked ? (
-                    <View style={[styles.dot, selected && styles.selectedDot]} />
+                    <View style={[styles.dot, { backgroundColor: selected ? colors.white : accentColor }]} />
                   ) : null}
                 </Pressable>
               ) : null}
@@ -71,39 +68,12 @@ export function MonthGrid({
 
 const styles = StyleSheet.create({
   weekRow: { flexDirection: 'row', marginBottom: 12 },
-  weekDay: {
-    color: colors.textSecondary,
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
-    textAlign: 'center',
-  },
+  weekDay: { color: colors.textSecondary, flex: 1, fontSize: 15, fontWeight: '600', textAlign: 'center' },
   grid: { flexDirection: 'row', flexWrap: 'wrap' },
-  cell: {
-    alignItems: 'center',
-    height: 54,
-    justifyContent: 'center',
-    width: '14.2857%',
-  },
+  cell: { alignItems: 'center', height: 54, justifyContent: 'center', width: '14.2857%' },
   compactCell: { height: 48 },
-  dayButton: {
-    alignItems: 'center',
-    borderRadius: 22,
-    height: 44,
-    justifyContent: 'center',
-    width: 44,
-  },
-  today: { borderColor: colors.private, borderWidth: 2 },
-  selectedDay: { backgroundColor: colors.private },
+  dayButton: { alignItems: 'center', borderRadius: 22, height: 44, justifyContent: 'center', width: 44 },
   dayText: { color: colors.textPrimary, fontSize: 20, fontWeight: '500' },
   selectedText: { color: colors.white, fontWeight: '700' },
-  dot: {
-    backgroundColor: colors.private,
-    borderRadius: 3,
-    bottom: 4,
-    height: 6,
-    position: 'absolute',
-    width: 6,
-  },
-  selectedDot: { backgroundColor: colors.white },
+  dot: { borderRadius: 3, bottom: 4, height: 6, position: 'absolute', width: 6 },
 });
