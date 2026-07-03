@@ -7,6 +7,10 @@ import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { addAppointment } from '@/src/services/appointmentStorage';
+import {
+  cancelAppointmentNotification,
+  scheduleAppointmentNotification,
+} from '@/src/services/notificationService';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
@@ -28,19 +32,23 @@ export default function NewAppointmentScreen() {
     if (!title.trim() || saving) return;
 
     setSaving(true);
-    const now = new Date().toISOString();
-    const appointment: Appointment = {
-      id: `${Date.now()}`,
-      title: title.trim(),
-      startDate: combineDateAndTime(selectedDate, time).toISOString(),
-      calendarType: 'private',
-      createdAt: now,
-    };
+    const startDate = combineDateAndTime(selectedDate, time);
+    let notificationId: string | undefined;
 
     try {
+      notificationId = await scheduleAppointmentNotification(title.trim(), startDate);
+      const appointment: Appointment = {
+        id: `${Date.now()}`,
+        title: title.trim(),
+        startDate: startDate.toISOString(),
+        calendarType: 'private',
+        createdAt: new Date().toISOString(),
+        notificationId,
+      };
       await addAppointment(appointment);
       router.back();
     } catch {
+      await cancelAppointmentNotification(notificationId);
       setSaving(false);
       Alert.alert('Kunne ikke lagre', 'Prøv igjen om et øyeblikk.');
     }
@@ -65,14 +73,7 @@ export default function NewAppointmentScreen() {
         </View>
 
         <Text style={styles.label}>Hva skal du gjøre?</Text>
-        <TextInput
-          autoFocus
-          placeholder="Skriv avtalen"
-          placeholderTextColor={colors.textSecondary}
-          value={title}
-          onChangeText={setTitle}
-          style={styles.textInput}
-        />
+        <TextInput autoFocus placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={styles.textInput} />
 
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Velg klokkeslett" onPress={() => setShowTimePicker(true)} style={styles.timeButton}>
