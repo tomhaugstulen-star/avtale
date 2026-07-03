@@ -11,6 +11,7 @@ import { scheduleAppointmentNotification } from '@/src/services/notificationServ
 import { addWorkAppointment } from '@/src/services/workAppointmentStorage';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
+import { parseSpokenAppointment } from '@/src/utils/speechAppointmentParser';
 
 export default function WorkNewAppointmentScreen() {
   const router = useRouter();
@@ -25,6 +26,12 @@ export default function WorkNewAppointmentScreen() {
   const [time, setTime] = useState(initialTime);
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  function handleDictation(text: string) {
+    const parsed = parseSpokenAppointment(text, time);
+    setTitle(parsed.title);
+    if (parsed.time) setTime(parsed.time);
+  }
 
   async function save() {
     if (!title.trim() || saving) return;
@@ -52,7 +59,7 @@ export default function WorkNewAppointmentScreen() {
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput autoFocus value={title} onChangeText={setTitle} placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} style={styles.textInput} />
-        <DictationButton accentColor={colors.work} onTranscript={setTitle} />
+        <DictationButton accentColor={colors.work} onTranscript={handleDictation} />
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
