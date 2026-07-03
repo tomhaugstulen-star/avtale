@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DictationButton } from '@/src/components/DictationButton';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -51,6 +52,7 @@ export default function WorkNewAppointmentScreen() {
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput autoFocus value={title} onChangeText={setTitle} placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} style={styles.textInput} />
+        <DictationButton accentColor={colors.work} onTranscript={setTitle} />
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
@@ -70,6 +72,6 @@ const styles = StyleSheet.create({
   textInput: { backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, color: colors.textPrimary, fontSize: 26, minHeight: 72, paddingHorizontal: 18 },
   timeButton: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, flexDirection: 'row', minHeight: 72, paddingHorizontal: 18 },
   timeText: { color: colors.textPrimary, flex: 1, fontSize: 28, fontWeight: '600' }, chevron: { color: colors.work, fontSize: 22 },
-  noticeCard: { backgroundColor: '#FFF3D8', borderRadius: 20, marginTop: 24, padding: 18 }, noticeTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700' }, noticeText: { color: colors.textPrimary, fontSize: 18, marginTop: 2 },
+  noticeCard: { backgroundColor: '#FFF3D8', borderRadius: 20, marginTop: 18, padding: 18 }, noticeTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700' }, noticeText: { color: colors.textPrimary, fontSize: 18, marginTop: 2 },
   saveButton: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' }, disabled: { opacity: 0.45 }, saveText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
