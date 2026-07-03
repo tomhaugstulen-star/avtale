@@ -4,4 +4,5 @@ export type Appointment = {
   startDate: string;
   calendarType: 'private';
   createdAt: string;
+  notificationId?: string;
 };
