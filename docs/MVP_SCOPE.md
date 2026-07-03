@@ -6,6 +6,21 @@ Dette dokumentet definerer første byggbare versjon av appen.
 
 MVP skal bevise at appen er raskere og enklere enn vanlig kalenderapp for enkel avtaleregistrering.
 
+## Status
+
+- [x] Startskjerm med Privat og En Ny Dag
+- [x] Face ID / enhetskode for En Ny Dag
+- [x] Privat kalender med månedsvisning og markeringer
+- [x] Privat oppretting, redigering og sletting
+- [x] Privat Mine avtaler
+- [x] Lokalt varsel 2 timer før
+- [x] Lokal lagring
+- [x] Grunnskjerm for arbeidskalender
+- [ ] Full arbeidsavtaleflyt
+- [ ] Tale/diktering
+
+Detaljert status finnes i [`STATUS.md`](STATUS.md).
+
 ## Må være med
 
 ### 1. Startskjerm
@@ -18,7 +33,7 @@ Startskjermen skal ha to store, men diskrete valg:
 Layout:
 
 - rolig bakgrunn
-- stor hilsen, for eksempel «God morgen!»
+- stor tidsstyrt hilsen
 - undertittel: «Hvilken kalender vil du se i dag?»
 - to store kort med ikon og tittel
 
@@ -33,16 +48,17 @@ Det skal ikke lages eget passordsystem i appen.
 
 ### 3. Kalender
 
-Kalenderskjermen skal vise:
+Begge kalendere skal vise:
 
 - måned og år
 - ukedager
 - datoer
-- markering på datoer med avtaler
+- prikk på datoer med avtaler
 - valgt dato
-- liste med avtaler for valgt dato
 - knapp for **Ny avtale**
-- knapp for **Snakk**
+- knapp for **Mine avtaler**
+
+Avtalelisten ligger på egen scrollbar skjerm for å holde kalenderen ryddig.
 
 ### 4. Ny avtale
 
@@ -53,7 +69,6 @@ Skjermen skal kun ha:
 - felt: «Klokkeslett»
 - informasjonskort: «Du får varsel 2 timer før avtalen»
 - knapp: «Lagre avtale»
-- sekundærknapp: «Snakk i stedet»
 
 Ikke med:
 
@@ -68,14 +83,10 @@ Ikke med:
 Når avtalen lagres, skal appen automatisk planlegge ett lokalt varsel:
 
 - tidspunkt: 2 timer før avtalen
-- lyd: én fast varslingslyd
-- tekst: avtaletittel og klokkeslett
+- lyd: standardlyd
+- tekst: avtaletittel
 
-Eksempel:
-
-```text
-Tannlege kl. 14:30
-```
+Ved redigering avbrytes gammelt varsel og et nytt planlegges. Ved sletting avbrytes varselet.
 
 ### 6. Tale/diktering
 
@@ -83,7 +94,7 @@ MVP skal ha støtte for tale som alternativ til skriving.
 
 Første akseptable nivå:
 
-- brukeren trykker **Snakk**
+- brukeren trykker en mikrofonknapp
 - appen bruker iOS talegjenkjenning
 - tekst settes inn i tittelfeltet
 
@@ -91,17 +102,18 @@ Senere kan tale også tolke dato og klokkeslett.
 
 ### 7. Lokal lagring
 
-Avtaler lagres lokalt på telefonen.
+Avtaler lagres lokalt på telefonen uten konto eller server.
 
 Minimumsdata:
 
 - id
-- calendarType: `private` eller `enNyDag`
+- `calendarType`: `private` eller `work`
 - title
-- date
-- time
+- startDate
 - createdAt
-- updatedAt
+- notificationId ved planlagt varsel
+
+Privat- og arbeidsavtaler holdes i separate lagringsnøkler.
 
 ## Bør vente
 
@@ -120,7 +132,8 @@ MVP er god nok når:
 
 1. En privat avtale kan legges inn på under 15 sekunder.
 2. En arbeidsavtale krever Face ID/kode før kalenderen åpnes.
-3. En avtale vises på riktig dato etter lagring.
-4. Varsel 2 timer før planlegges automatisk.
-5. Tekst og knapper er store nok til å brukes uten briller.
-6. Appen kan brukes uten å åpne noen innstillingsskjerm.
+3. Avtaler vises med prikk på riktig dato etter lagring.
+4. Mine avtaler viser en scrollbar og sortert liste.
+5. Varsel 2 timer før planlegges automatisk.
+6. Tekst og knapper er store nok til å brukes uten briller.
+7. Appen kan brukes uten å åpne noen innstillingsskjerm.
