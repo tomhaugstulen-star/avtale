@@ -5,6 +5,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
+import type { Appointment } from '@/src/models/Appointment';
+import { addAppointment } from '@/src/services/appointmentStorage';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
 export default function NewAppointmentScreen() {
@@ -12,13 +14,35 @@ export default function NewAppointmentScreen() {
   const params = useLocalSearchParams<{ date?: string }>();
   const selectedDate = useMemo(() => new Date(params.date ?? Date.now()), [params.date]);
   const initialTime = useMemo(() => {
-    const time = new Date(selectedDate);
-    time.setHours(12, 0, 0, 0);
-    return time;
+    const value = new Date(selectedDate);
+    value.setHours(12, 0, 0, 0);
+    return value;
   }, [selectedDate]);
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(initialTime);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [saving, setSaving] = useState(false);
+
+  async function saveAppointment() {
+    if (!title.trim() || saving) return;
+
+    setSaving(true);
+    const startDate = new Date(selectedDate);
+    startDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
+    const now = new Date().toISOString();
+    const appointment: Appointment = {
+      id: `${Date.now()}`,
+      title: title.trim(),
+      startDate: startDate.toISOString(),
+      calendarType: 'private',
+      createdAt: now,
+    };
+
+    await addAppointment(appointment);
+    router.back();
+  }
+
+  const disabled = !title.trim() || saving;
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -57,22 +81,12 @@ export default function NewAppointmentScreen() {
           <Text style={styles.noticeText}>2 timer før avtalen</Text>
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Lagre avtale"
-          disabled={!title.trim()}
-          style={[styles.saveButton, !title.trim() && styles.saveDisabled]}
-        >
-          <Text style={styles.saveText}>Lagre avtale</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Lagre avtale" disabled={disabled} onPress={saveAppointment} style={[styles.saveButton, disabled && styles.saveDisabled]}>
+          <Text style={styles.saveText}>{saving ? 'Lagrer…' : 'Lagre avtale'}</Text>
         </Pressable>
       </KeyboardAvoidingView>
 
-      <TimePickerModal
-        visible={showTimePicker}
-        value={time}
-        onChange={setTime}
-        onClose={() => setShowTimePicker(false)}
-      />
+      <TimePickerModal visible={showTimePicker} value={time} onChange={setTime} onClose={() => setShowTimePicker(false)} />
     </SafeAreaView>
   );
 }
