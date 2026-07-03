@@ -67,31 +67,33 @@ export default function CalendarScreen() {
 
       <View style={styles.monthCard}>
         <View style={styles.monthHeader}>
-          <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={styles.monthButton}>
+          <Text numberOfLines={1} style={styles.monthTitle}>{monthTitle}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={[styles.monthButton, styles.previousButton]}>
             <Text style={styles.monthArrow}>‹</Text>
           </Pressable>
-          <Text numberOfLines={1} style={styles.monthTitle}>{monthTitle}</Text>
-          <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={styles.monthButton}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={[styles.monthButton, styles.nextButton]}>
             <Text style={styles.monthArrow}>›</Text>
           </Pressable>
         </View>
         <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
       </View>
 
-      <View style={styles.daySection}>
-        {selectedDay ? (
-          <>
-            <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
-            {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
-              <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
-            )}
-          </>
-        ) : <Text style={styles.chooseText}>Velg en dag</Text>}
-      </View>
+      <View style={styles.footer}>
+        <View style={styles.daySection}>
+          {selectedDay ? (
+            <>
+              <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
+              {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
+                <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
+              )}
+            </>
+          ) : <Text style={styles.chooseText}>Velg en dag</Text>}
+        </View>
 
-      <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" disabled={!selectedDay} onPress={openNewAppointment} style={[styles.primaryButton, !selectedDay && styles.disabledButton]}>
-        <Text style={styles.primaryButtonText}>＋ Ny avtale</Text>
-      </Pressable>
+        <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" disabled={!selectedDay} onPress={openNewAppointment} style={[styles.primaryButton, !selectedDay && styles.disabledButton]}>
+          <Text style={styles.primaryButtonText}>＋ Ny avtale</Text>
+        </Pressable>
+      </View>
     </SafeAreaView>
   );
 }
@@ -104,15 +106,18 @@ const styles = StyleSheet.create({
   title: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
   headerSpacer: { width: 44 },
   monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 2, paddingHorizontal: 16, paddingVertical: 18 },
-  monthHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: 16 },
-  monthButton: { alignItems: 'center', flexShrink: 0, height: 42, justifyContent: 'center', width: 44 },
+  monthHeader: { alignItems: 'center', height: 42, justifyContent: 'center', marginBottom: 16, position: 'relative' },
+  monthButton: { alignItems: 'center', height: 42, justifyContent: 'center', position: 'absolute', top: 0, width: 44, zIndex: 1 },
+  previousButton: { left: 0 },
+  nextButton: { right: 0 },
   monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
-  monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 26, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
-  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 14, padding: 18 },
+  monthTitle: { color: colors.textPrimary, fontSize: 23, fontWeight: '500', paddingHorizontal: 48, textAlign: 'center', textTransform: 'capitalize', width: '100%' },
+  footer: { gap: 12, height: 174, marginTop: 14 },
+  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, flex: 1, justifyContent: 'center', padding: 18 },
   dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
   chooseText: { color: colors.textSecondary, fontSize: 20, fontWeight: '600' },
   errorText: { color: '#A33A3A', fontSize: 18, marginTop: 10 },
-  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 64, justifyContent: 'center', marginTop: 'auto' },
+  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 64, justifyContent: 'center' },
   disabledButton: { opacity: 0.45 },
   primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
