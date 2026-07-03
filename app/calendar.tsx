@@ -19,7 +19,7 @@ export default function CalendarScreen() {
   const router = useRouter();
   const today = useMemo(() => new Date(), []);
   const [month, setMonth] = useState(new Date(today.getFullYear(), today.getMonth(), 1));
-  const [selectedDay, setSelectedDay] = useState(today.getDate());
+  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loadError, setLoadError] = useState('');
   const monthTitle = getMonthTitle(month);
@@ -36,18 +36,17 @@ export default function CalendarScreen() {
 
   const monthAppointments = getAppointmentsForMonth(appointments, month);
   const markedDays = getMarkedDays(monthAppointments);
-  const selectedAppointments = getAppointmentsForDay(monthAppointments, selectedDay);
+  const selectedAppointments = selectedDay
+    ? getAppointmentsForDay(monthAppointments, selectedDay)
+    : [];
 
   function changeMonth(offset: number) {
-    const next = new Date(month.getFullYear(), month.getMonth() + offset, 1);
-    const isCurrentMonth =
-      next.getFullYear() === today.getFullYear() &&
-      next.getMonth() === today.getMonth();
-    setMonth(next);
-    setSelectedDay(isCurrentMonth ? today.getDate() : 1);
+    setMonth(new Date(month.getFullYear(), month.getMonth() + offset, 1));
+    setSelectedDay(null);
   }
 
   function openNewAppointment() {
+    if (!selectedDay) return;
     const date = new Date(month.getFullYear(), month.getMonth(), selectedDay, 12);
     router.push({ pathname: '/new-appointment', params: { date: date.toISOString() } });
   }
@@ -71,7 +70,7 @@ export default function CalendarScreen() {
           <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={styles.monthButton}>
             <Text style={styles.monthArrow}>‹</Text>
           </Pressable>
-          <Text style={styles.monthTitle}>{monthTitle}</Text>
+          <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.monthTitle}>{monthTitle}</Text>
           <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={styles.monthButton}>
             <Text style={styles.monthArrow}>›</Text>
           </Pressable>
@@ -80,13 +79,17 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.daySection}>
-        <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
-        {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
-          <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
-        )}
+        {selectedDay ? (
+          <>
+            <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
+            {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
+              <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
+            )}
+          </>
+        ) : <Text style={styles.chooseText}>Velg en dag</Text>}
       </View>
 
-      <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" onPress={openNewAppointment} style={styles.primaryButton}>
+      <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" disabled={!selectedDay} onPress={openNewAppointment} style={[styles.primaryButton, !selectedDay && styles.disabledButton]}>
         <Text style={styles.primaryButtonText}>＋ Ny avtale</Text>
       </Pressable>
     </SafeAreaView>
@@ -101,13 +104,15 @@ const styles = StyleSheet.create({
   title: { color: colors.textPrimary, fontSize: 30, fontWeight: '700' },
   headerSpacer: { width: 48 },
   monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 8, paddingHorizontal: 16, paddingVertical: 20 },
-  monthHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20 },
-  monthButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
+  monthHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: 20 },
+  monthButton: { alignItems: 'center', flexShrink: 0, height: 44, justifyContent: 'center', width: 52 },
   monthArrow: { color: colors.private, fontSize: 38, lineHeight: 40 },
-  monthTitle: { color: colors.textPrimary, fontSize: 30, fontWeight: '700', textTransform: 'capitalize' },
+  monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 30, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
   daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 18, padding: 20 },
   dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
+  chooseText: { color: colors.textSecondary, fontSize: 20, fontWeight: '600' },
   errorText: { color: '#A33A3A', fontSize: 18, marginTop: 10 },
   primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' },
+  disabledButton: { opacity: 0.45 },
   primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
