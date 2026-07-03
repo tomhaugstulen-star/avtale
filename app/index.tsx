@@ -28,7 +28,6 @@ export default function WelcomeScreen() {
         <View style={styles.cards}>
           <CalendarChoiceCard
             title="Privat"
-            subtitle="Din personlige kalender"
             accent={colors.private}
             softBackground={colors.privateSoft}
             icon={privateIcon}
@@ -36,7 +35,6 @@ export default function WelcomeScreen() {
           />
           <CalendarChoiceCard
             title="En Ny Dag"
-            subtitle="Din arbeidskalender"
             accent={colors.work}
             softBackground={colors.workSoft}
             icon={workIcon}
