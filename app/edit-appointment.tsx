@@ -6,11 +6,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
-import {
-  deleteAppointment,
-  getAppointment,
-  updateAppointment,
-} from '@/src/services/appointmentStorage';
+import { deleteAppointment, getAppointment, updateAppointment } from '@/src/services/appointmentStorage';
+import { cancelAppointmentNotification, scheduleAppointmentNotification } from '@/src/services/notificationService';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
@@ -37,15 +34,15 @@ export default function EditAppointmentScreen() {
     if (!appointment || !title.trim() || saving) return;
     setSaving(true);
     const date = combineDateAndTime(new Date(appointment.startDate), time);
+    let notificationId: string | undefined;
 
     try {
-      await updateAppointment({
-        ...appointment,
-        title: title.trim(),
-        startDate: date.toISOString(),
-      });
+      notificationId = await scheduleAppointmentNotification(title.trim(), date);
+      await updateAppointment({ ...appointment, title: title.trim(), startDate: date.toISOString(), notificationId });
+      await cancelAppointmentNotification(appointment.notificationId);
       router.back();
     } catch {
+      await cancelAppointmentNotification(notificationId);
       setSaving(false);
       Alert.alert('Kunne ikke lagre', 'Prøv igjen om et øyeblikk.');
     }
@@ -55,29 +52,19 @@ export default function EditAppointmentScreen() {
     if (!appointment) return;
     Alert.alert('Slette avtalen?', appointment.title, [
       { text: 'Avbryt', style: 'cancel' },
-      {
-        text: 'Slett',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await deleteAppointment(appointment.id);
-            router.back();
-          } catch {
-            Alert.alert('Kunne ikke slette', 'Prøv igjen om et øyeblikk.');
-          }
-        },
-      },
+      { text: 'Slett', style: 'destructive', onPress: async () => {
+        try {
+          await deleteAppointment(appointment.id);
+          await cancelAppointmentNotification(appointment.notificationId);
+          router.back();
+        } catch {
+          Alert.alert('Kunne ikke slette', 'Prøv igjen om et øyeblikk.');
+        }
+      } },
     ]);
   }
 
-  if (!appointment) {
-    return (
-      <SafeAreaView style={styles.safeArea}>
-        <Text style={styles.loading}>Henter avtalen…</Text>
-      </SafeAreaView>
-    );
-  }
-
+  if (!appointment) return <SafeAreaView style={styles.safeArea}><Text style={styles.loading}>Henter avtalen…</Text></SafeAreaView>;
   const date = new Date(appointment.startDate);
   const disabled = !title.trim() || saving;
 
@@ -85,36 +72,17 @@ export default function EditAppointmentScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.headerButton}>
-            <Text style={styles.closeText}>×</Text>
-          </Pressable>
-          <Text style={styles.screenTitle}>Rediger avtale</Text>
-          <View style={styles.headerButton} />
+          <Pressable onPress={() => router.back()} style={styles.headerButton}><Text style={styles.closeText}>×</Text></Pressable>
+          <Text style={styles.screenTitle}>Rediger avtale</Text><View style={styles.headerButton} />
         </View>
-
-        <View style={styles.dateCard}>
-          <Text style={styles.dateLabel}>Dato</Text>
-          <Text style={styles.dateText}>{formatLongDate(date)}</Text>
-        </View>
-
+        <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(date)}</Text></View>
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput value={title} onChangeText={setTitle} style={styles.textInput} />
-
         <Text style={styles.label}>Klokkeslett</Text>
-        <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}>
-          <Text style={styles.timeText}>{formatTime(time)}</Text>
-          <Text style={styles.chevron}>⌄</Text>
-        </Pressable>
-
-        <Pressable onPress={confirmDelete} style={styles.deleteButton}>
-          <Text style={styles.deleteText}>Slett avtale</Text>
-        </Pressable>
-
-        <Pressable disabled={disabled} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}>
-          <Text style={styles.saveText}>{saving ? 'Lagrer…' : 'Lagre endringer'}</Text>
-        </Pressable>
+        <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>⌄</Text></Pressable>
+        <Pressable onPress={confirmDelete} style={styles.deleteButton}><Text style={styles.deleteText}>Slett avtale</Text></Pressable>
+        <Pressable disabled={disabled} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer…' : 'Lagre endringer'}</Text></Pressable>
       </View>
-
       <TimePickerModal visible={showPicker} value={time} onChange={setTime} onClose={() => setShowPicker(false)} />
     </SafeAreaView>
   );
