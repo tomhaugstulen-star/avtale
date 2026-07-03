@@ -8,7 +8,13 @@
     "scheme": "avtale",
     "plugins": [
       "expo-router",
-      "expo-notifications"
+      "expo-notifications",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Avtale bruker Face ID for å beskytte kalenderen En Ny Dag."
+        }
+      ]
     ],
     "ios": {
       "supportsTablet": false,
