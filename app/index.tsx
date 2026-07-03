@@ -13,8 +13,8 @@ const workIcon = require('@/assets/images/en-ny-dag-icon.png');
 function getGreeting(date = new Date()) {
   const hour = date.getHours();
 
-  if (hour < 12) return 'God morgen!';
-  if (hour < 17) return 'God dag!';
+  if (hour >= 5 && hour < 12) return 'God morgen!';
+  if (hour >= 12 && hour < 17) return 'God dag!';
   return 'God kveld!';
 }
 
