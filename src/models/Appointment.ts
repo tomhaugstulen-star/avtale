@@ -1,8 +1,10 @@
+export type CalendarType = 'private' | 'work';
+
 export type Appointment = {
   id: string;
   title: string;
   startDate: string;
-  calendarType: 'private';
+  calendarType: CalendarType;
   createdAt: string;
   notificationId?: string;
 };
