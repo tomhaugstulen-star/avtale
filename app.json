@@ -6,16 +6,27 @@
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "avtale",
-    "plugins": ["expo-router"],
+    "plugins": [
+      "expo-router"
+    ],
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "no.haugstulen.avtale"
+      "bundleIdentifier": "no.haugstulen.avtale",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "no.haugstulen.avtale"
     },
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "94aa3e33-3262-46f1-9021-17582be7d5ae"
+      }
     }
   }
 }
