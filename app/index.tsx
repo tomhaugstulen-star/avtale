@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -8,9 +9,23 @@ const background = require('@/assets/images/welcome-background.webp');
 const privateIcon = require('@/assets/images/private-icon.png');
 const workIcon = require('@/assets/images/en-ny-dag-icon.png');
 
+function getGreeting(date = new Date()) {
+  const hour = date.getHours();
+
+  if (hour < 12) return 'God morgen!';
+  if (hour < 17) return 'God dag!';
+  return 'God kveld!';
+}
+
 export default function WelcomeScreen() {
+  const [greeting, setGreeting] = useState(getGreeting());
   const openPrivate = () => {};
   const openWork = () => {};
+
+  useEffect(() => {
+    const timer = setInterval(() => setGreeting(getGreeting()), 60_000);
+    return () => clearInterval(timer);
+  }, []);
 
   return (
     <ImageBackground source={background} style={styles.background} resizeMode="cover">
@@ -18,7 +33,7 @@ export default function WelcomeScreen() {
         <View style={styles.header}>
           <Text accessibilityElementsHidden style={styles.sun}>☀︎</Text>
           <Text adjustsFontSizeToFit numberOfLines={1} style={styles.title}>
-            God morgen!
+            {greeting}
           </Text>
           <Text numberOfLines={2} style={styles.subtitle}>
             Hvilken kalender vil du se i dag?
@@ -84,13 +99,14 @@ const styles = StyleSheet.create({
   cards: {
     flexDirection: 'row',
     gap: 14,
-    marginTop: 40,
+    marginTop: 36,
   },
   privacy: {
-    color: colors.textSecondary,
+    color: '#4B5563',
     fontSize: 14,
+    fontWeight: '600',
     marginTop: 'auto',
-    paddingBottom: 4,
+    paddingBottom: 18,
     textAlign: 'center',
   },
 });
