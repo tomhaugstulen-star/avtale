@@ -30,9 +30,23 @@ export function CalendarChoiceCard({
         pressed && styles.pressed,
       ]}
     >
-      <Image source={icon} style={[styles.icon, { tintColor: accent }]} />
-      <Text style={styles.title}>{title}</Text>
-      <Text style={styles.subtitle}>{subtitle}</Text>
+      <Image source={icon} style={styles.icon} />
+      <Text
+        adjustsFontSizeToFit
+        minimumFontScale={0.78}
+        numberOfLines={2}
+        style={styles.title}
+      >
+        {title}
+      </Text>
+      <Text
+        adjustsFontSizeToFit
+        minimumFontScale={0.8}
+        numberOfLines={3}
+        style={styles.subtitle}
+      >
+        {subtitle}
+      </Text>
       <View style={[styles.arrowCircle, { backgroundColor: accent }]}> 
         <Text style={styles.arrow}>›</Text>
       </View>
@@ -43,50 +57,50 @@ export function CalendarChoiceCard({
 const styles = StyleSheet.create({
   card: {
     alignItems: 'center',
-    borderRadius: 28,
+    borderRadius: 26,
     borderWidth: 1.5,
     flex: 1,
-    minHeight: 340,
-    paddingHorizontal: 16,
-    paddingVertical: 32,
+    minHeight: 310,
+    paddingHorizontal: 12,
+    paddingVertical: 24,
   },
   pressed: {
     opacity: 0.82,
     transform: [{ scale: 0.98 }],
   },
   icon: {
-    height: 92,
-    marginBottom: 26,
+    height: 76,
+    marginBottom: 20,
     resizeMode: 'contain',
-    width: 92,
+    width: 76,
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 30,
+    fontSize: 26,
     fontWeight: '700',
-    marginBottom: 18,
+    marginBottom: 14,
     textAlign: 'center',
   },
   subtitle: {
     color: colors.textSecondary,
-    fontSize: 20,
-    lineHeight: 28,
-    minHeight: 56,
+    fontSize: 17,
+    lineHeight: 22,
+    minHeight: 66,
     textAlign: 'center',
   },
   arrowCircle: {
     alignItems: 'center',
-    borderRadius: 28,
-    height: 56,
+    borderRadius: 24,
+    height: 48,
     justifyContent: 'center',
     marginTop: 'auto',
-    width: 56,
+    width: 48,
   },
   arrow: {
     color: colors.white,
-    fontSize: 42,
+    fontSize: 36,
     fontWeight: '300',
-    lineHeight: 46,
+    lineHeight: 40,
     marginTop: -4,
   },
 });
