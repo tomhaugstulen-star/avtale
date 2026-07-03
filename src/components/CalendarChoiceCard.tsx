@@ -31,7 +31,7 @@ export function CalendarChoiceCard({
       <Image source={icon} style={styles.icon} />
       <Text
         adjustsFontSizeToFit
-        minimumFontScale={0.82}
+        minimumFontScale={0.8}
         numberOfLines={2}
         style={styles.title}
       >
@@ -50,39 +50,39 @@ const styles = StyleSheet.create({
     borderRadius: 26,
     borderWidth: 1.5,
     flex: 1,
-    minHeight: 270,
+    minHeight: 240,
     paddingHorizontal: 12,
-    paddingVertical: 24,
+    paddingVertical: 22,
   },
   pressed: {
     opacity: 0.82,
     transform: [{ scale: 0.98 }],
   },
   icon: {
-    height: 76,
-    marginBottom: 24,
+    height: 68,
+    marginBottom: 22,
     resizeMode: 'contain',
-    width: 76,
+    width: 68,
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 27,
+    fontSize: 25,
     fontWeight: '700',
     textAlign: 'center',
   },
   arrowCircle: {
     alignItems: 'center',
-    borderRadius: 24,
-    height: 48,
+    borderRadius: 22,
+    height: 44,
     justifyContent: 'center',
     marginTop: 'auto',
-    width: 48,
+    width: 44,
   },
   arrow: {
     color: colors.white,
-    fontSize: 36,
+    fontSize: 32,
     fontWeight: '300',
-    lineHeight: 40,
-    marginTop: -4,
+    lineHeight: 36,
+    marginTop: -3,
   },
 });
