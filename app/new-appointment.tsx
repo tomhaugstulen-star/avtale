@@ -1,12 +1,13 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { addAppointment } from '@/src/services/appointmentStorage';
+import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
 export default function NewAppointmentScreen() {
@@ -27,19 +28,22 @@ export default function NewAppointmentScreen() {
     if (!title.trim() || saving) return;
 
     setSaving(true);
-    const startDate = new Date(selectedDate);
-    startDate.setHours(time.getHours(), time.getMinutes(), 0, 0);
     const now = new Date().toISOString();
     const appointment: Appointment = {
       id: `${Date.now()}`,
       title: title.trim(),
-      startDate: startDate.toISOString(),
+      startDate: combineDateAndTime(selectedDate, time).toISOString(),
       calendarType: 'private',
       createdAt: now,
     };
 
-    await addAppointment(appointment);
-    router.back();
+    try {
+      await addAppointment(appointment);
+      router.back();
+    } catch {
+      setSaving(false);
+      Alert.alert('Kunne ikke lagre', 'Prøv igjen om et øyeblikk.');
+    }
   }
 
   const disabled = !title.trim() || saving;
