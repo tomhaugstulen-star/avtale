@@ -1,6 +1,6 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppointmentList } from '@/src/components/AppointmentList';
@@ -81,12 +81,12 @@ export default function CalendarScreen() {
       <View style={styles.footer}>
         <View style={styles.daySection}>
           {selectedDay ? (
-            <>
+            <ScrollView contentContainerStyle={styles.appointmentContent} showsVerticalScrollIndicator={false}>
               <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
               {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
                 <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
               )}
-            </>
+            </ScrollView>
           ) : <Text style={styles.chooseText}>Velg en dag</Text>}
         </View>
 
@@ -112,8 +112,9 @@ const styles = StyleSheet.create({
   nextButton: { right: 0 },
   monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
   monthTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '400', paddingHorizontal: 44, textAlign: 'center', textTransform: 'capitalize', width: '100%' },
-  footer: { gap: 12, height: 150, marginTop: 'auto' },
-  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, height: 74, justifyContent: 'center', paddingHorizontal: 18 },
+  footer: { gap: 12, height: 188, marginTop: 'auto' },
+  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, height: 112, justifyContent: 'center', overflow: 'hidden', paddingHorizontal: 18 },
+  appointmentContent: { paddingVertical: 14 },
   dayTitle: { color: colors.textPrimary, fontSize: 22, fontWeight: '700' },
   chooseText: { color: colors.textSecondary, fontSize: 18, fontWeight: '600' },
   errorText: { color: '#A33A3A', fontSize: 18, marginTop: 6 },
