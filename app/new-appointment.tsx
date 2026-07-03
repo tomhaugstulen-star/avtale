@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
@@ -10,12 +11,14 @@ export default function NewAppointmentScreen() {
   const router = useRouter();
   const params = useLocalSearchParams<{ date?: string }>();
   const selectedDate = useMemo(() => new Date(params.date ?? Date.now()), [params.date]);
-  const defaultTime = useMemo(() => {
+  const initialTime = useMemo(() => {
     const time = new Date(selectedDate);
     time.setHours(12, 0, 0, 0);
     return time;
   }, [selectedDate]);
   const [title, setTitle] = useState('');
+  const [time, setTime] = useState(initialTime);
+  const [showTimePicker, setShowTimePicker] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -44,8 +47,8 @@ export default function NewAppointmentScreen() {
         />
 
         <Text style={styles.label}>Klokkeslett</Text>
-        <Pressable accessibilityRole="button" style={styles.timeButton}>
-          <Text style={styles.timeText}>{formatTime(defaultTime)}</Text>
+        <Pressable accessibilityRole="button" accessibilityLabel="Velg klokkeslett" onPress={() => setShowTimePicker(true)} style={styles.timeButton}>
+          <Text style={styles.timeText}>{formatTime(time)}</Text>
           <Text style={styles.chevron}>⌄</Text>
         </Pressable>
 
@@ -63,6 +66,13 @@ export default function NewAppointmentScreen() {
           <Text style={styles.saveText}>Lagre avtale</Text>
         </Pressable>
       </KeyboardAvoidingView>
+
+      <TimePickerModal
+        visible={showTimePicker}
+        value={time}
+        onChange={setTime}
+        onClose={() => setShowTimePicker(false)}
+      />
     </SafeAreaView>
   );
 }
