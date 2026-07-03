@@ -3,14 +3,12 @@ import { useMemo, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { DictationButton } from '@/src/components/DictationButton';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { addAppointment } from '@/src/services/appointmentStorage';
-import {
-  cancelAppointmentNotification,
-  scheduleAppointmentNotification,
-} from '@/src/services/notificationService';
+import { cancelAppointmentNotification, scheduleAppointmentNotification } from '@/src/services/notificationService';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
@@ -30,7 +28,6 @@ export default function NewAppointmentScreen() {
 
   async function saveAppointment() {
     if (!title.trim() || saving) return;
-
     setSaving(true);
     const startDate = combineDateAndTime(selectedDate, time);
     let notificationId: string | undefined;
@@ -74,6 +71,7 @@ export default function NewAppointmentScreen() {
 
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput autoFocus placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={styles.textInput} />
+        <DictationButton accentColor={colors.private} onTranscript={setTitle} />
 
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Velg klokkeslett" onPress={() => setShowTimePicker(true)} style={styles.timeButton}>
@@ -90,7 +88,6 @@ export default function NewAppointmentScreen() {
           <Text style={styles.saveText}>{saving ? 'Lagrer…' : 'Lagre avtale'}</Text>
         </Pressable>
       </KeyboardAvoidingView>
-
       <TimePickerModal visible={showTimePicker} value={time} onChange={setTime} onClose={() => setShowTimePicker(false)} />
     </SafeAreaView>
   );
@@ -111,7 +108,7 @@ const styles = StyleSheet.create({
   timeButton: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.private, borderRadius: 20, borderWidth: 1.5, flexDirection: 'row', minHeight: 72, paddingHorizontal: 18 },
   timeText: { color: colors.textPrimary, flex: 1, fontSize: 28, fontWeight: '600' },
   chevron: { color: colors.private, fontSize: 28 },
-  noticeCard: { backgroundColor: '#FFF3D8', borderRadius: 20, marginTop: 24, padding: 18 },
+  noticeCard: { backgroundColor: '#FFF3D8', borderRadius: 20, marginTop: 18, padding: 18 },
   noticeTitle: { color: colors.textPrimary, fontSize: 18, fontWeight: '700' },
   noticeText: { color: colors.textPrimary, fontSize: 18, marginTop: 2 },
   saveButton: { alignItems: 'center', backgroundColor: '#2FB98E', borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' },
