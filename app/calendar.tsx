@@ -45,6 +45,10 @@ export default function CalendarScreen() {
     router.push({ pathname: '/new-appointment', params: { date: date.toISOString() } });
   }
 
+  function openAppointment(appointment: Appointment) {
+    router.push({ pathname: '/edit-appointment', params: { id: appointment.id } });
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -62,7 +66,9 @@ export default function CalendarScreen() {
 
       <View style={styles.daySection}>
         <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
-        {loadError ? <Text style={styles.errorText}>{loadError}</Text> : <AppointmentList appointments={selectedAppointments} />}
+        {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
+          <AppointmentList appointments={selectedAppointments} onSelect={openAppointment} />
+        )}
       </View>
 
       <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" onPress={openNewAppointment} style={styles.primaryButton}>
