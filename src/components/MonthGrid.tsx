@@ -17,6 +17,10 @@ export function MonthGrid({
   onSelectDay,
 }: Props) {
   const days = getCalendarDays(month);
+  const today = new Date();
+  const showingCurrentMonth =
+    month.getFullYear() === today.getFullYear() &&
+    month.getMonth() === today.getMonth();
 
   return (
     <View>
@@ -29,6 +33,7 @@ export function MonthGrid({
       <View style={styles.grid}>
         {days.map((day, index) => {
           const selected = day === selectedDay;
+          const isToday = showingCurrentMonth && day === today.getDate();
           const marked = day ? markedDays.includes(day) : false;
 
           return (
@@ -38,7 +43,11 @@ export function MonthGrid({
                   accessibilityRole="button"
                   accessibilityLabel={`Velg ${day}.`}
                   onPress={() => onSelectDay(day)}
-                  style={[styles.dayButton, selected && styles.selectedDay]}
+                  style={[
+                    styles.dayButton,
+                    isToday && !selected && styles.today,
+                    selected && styles.selectedDay,
+                  ]}
                 >
                   <Text style={[styles.dayText, selected && styles.selectedText]}>
                     {day}
@@ -79,6 +88,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
   },
+  today: { borderColor: colors.private, borderWidth: 2 },
   selectedDay: { backgroundColor: colors.private },
   dayText: { color: colors.textPrimary, fontSize: 20, fontWeight: '500' },
   selectedText: { color: colors.white, fontWeight: '700' },
