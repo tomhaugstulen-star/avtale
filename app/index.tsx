@@ -17,8 +17,12 @@ export default function WelcomeScreen() {
       <SafeAreaView style={styles.safeArea}>
         <View style={styles.header}>
           <Text accessibilityElementsHidden style={styles.sun}>☀︎</Text>
-          <Text style={styles.title}>God morgen!</Text>
-          <Text style={styles.subtitle}>Hvilken kalender vil du se i dag?</Text>
+          <Text adjustsFontSizeToFit numberOfLines={1} style={styles.title}>
+            God morgen!
+          </Text>
+          <Text numberOfLines={2} style={styles.subtitle}>
+            Hvilken kalender vil du se i dag?
+          </Text>
         </View>
 
         <View style={styles.cards}>
@@ -40,7 +44,7 @@ export default function WelcomeScreen() {
           />
         </View>
 
-        <Text style={styles.privacy}>⌾ Valget ditt er privat og lagres lokalt</Text>
+        <Text style={styles.privacy}>Valget ditt lagres lokalt på telefonen</Text>
       </SafeAreaView>
     </ImageBackground>
   );
@@ -52,43 +56,43 @@ const styles = StyleSheet.create({
   },
   safeArea: {
     flex: 1,
-    paddingHorizontal: 22,
-    paddingVertical: 18,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
   },
   header: {
     alignItems: 'center',
-    marginTop: 34,
+    marginTop: 18,
   },
   sun: {
     color: '#F1B542',
-    fontSize: 64,
-    lineHeight: 68,
-    marginBottom: 18,
+    fontSize: 52,
+    lineHeight: 56,
+    marginBottom: 12,
   },
   title: {
     color: colors.textPrimary,
-    fontSize: 48,
-    fontWeight: '500',
-    letterSpacing: -1.2,
+    fontSize: 42,
+    fontWeight: '600',
+    letterSpacing: -1,
     textAlign: 'center',
   },
   subtitle: {
     color: colors.textSecondary,
-    fontSize: 22,
-    lineHeight: 30,
-    marginTop: 12,
+    fontSize: 20,
+    lineHeight: 27,
+    marginTop: 10,
     textAlign: 'center',
   },
   cards: {
     flexDirection: 'row',
-    gap: 16,
-    marginTop: 62,
+    gap: 14,
+    marginTop: 40,
   },
   privacy: {
     color: colors.textSecondary,
-    fontSize: 15,
+    fontSize: 14,
     marginTop: 'auto',
-    paddingBottom: 8,
+    paddingBottom: 4,
     textAlign: 'center',
   },
 });
