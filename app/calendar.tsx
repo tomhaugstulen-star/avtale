@@ -8,6 +8,11 @@ import { MonthGrid } from '@/src/components/MonthGrid';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getAppointments } from '@/src/services/appointmentStorage';
+import {
+  getAppointmentsForDay,
+  getAppointmentsForMonth,
+  getMarkedDays,
+} from '@/src/utils/appointments';
 import { getMonthTitle } from '@/src/utils/calendar';
 
 export default function CalendarScreen() {
@@ -15,22 +20,24 @@ export default function CalendarScreen() {
   const today = useMemo(() => new Date(), []);
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
+  const [loadError, setLoadError] = useState('');
   const monthTitle = getMonthTitle(today);
   const monthName = monthTitle.split(' ')[0].toLowerCase();
 
   useFocusEffect(
     useCallback(() => {
-      getAppointments().then(setAppointments);
+      setLoadError('');
+      getAppointments()
+        .then(setAppointments)
+        .catch(() => setLoadError('Kunne ikke hente avtalene.'));
     }, []),
   );
 
-  const monthAppointments = appointments.filter((appointment) => {
-    const date = new Date(appointment.startDate);
-    return date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth();
-  });
-  const markedDays = [...new Set(monthAppointments.map((item) => new Date(item.startDate).getDate()))];
-  const selectedAppointments = monthAppointments.filter(
-    (item) => new Date(item.startDate).getDate() === selectedDay,
+  const monthAppointments = getAppointmentsForMonth(appointments, today);
+  const markedDays = getMarkedDays(monthAppointments);
+  const selectedAppointments = getAppointmentsForDay(
+    monthAppointments,
+    selectedDay,
   );
 
   function openNewAppointment() {
@@ -50,17 +57,12 @@ export default function CalendarScreen() {
 
       <View style={styles.monthCard}>
         <Text style={styles.monthTitle}>{monthTitle}</Text>
-        <MonthGrid
-          month={today}
-          selectedDay={selectedDay}
-          markedDays={markedDays}
-          onSelectDay={setSelectedDay}
-        />
+        <MonthGrid month={today} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
       </View>
 
       <View style={styles.daySection}>
         <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
-        <AppointmentList appointments={selectedAppointments} />
+        {loadError ? <Text style={styles.errorText}>{loadError}</Text> : <AppointmentList appointments={selectedAppointments} />}
       </View>
 
       <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" onPress={openNewAppointment} style={styles.primaryButton}>
@@ -81,6 +83,7 @@ const styles = StyleSheet.create({
   monthTitle: { color: colors.textPrimary, fontSize: 30, fontWeight: '700', marginBottom: 20, textTransform: 'capitalize' },
   daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 18, padding: 20 },
   dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
+  errorText: { color: '#A33A3A', fontSize: 18, marginTop: 10 },
   primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' },
   primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
