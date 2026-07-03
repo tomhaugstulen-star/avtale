@@ -16,6 +16,7 @@ export default function CalendarScreen() {
   const [selectedDay, setSelectedDay] = useState(today.getDate());
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const monthTitle = getMonthTitle(today);
+  const monthName = monthTitle.split(' ')[0].toLowerCase();
 
   useFocusEffect(
     useCallback(() => {
@@ -58,7 +59,7 @@ export default function CalendarScreen() {
       </View>
 
       <View style={styles.daySection}>
-        <Text style={styles.dayTitle}>{selectedDay}. {monthTitle.split(' ')[0]}</Text>
+        <Text style={styles.dayTitle}>{selectedDay}. {monthName}</Text>
         <AppointmentList appointments={selectedAppointments} />
       </View>
 
@@ -79,7 +80,7 @@ const styles = StyleSheet.create({
   monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 8, paddingHorizontal: 16, paddingVertical: 20 },
   monthTitle: { color: colors.textPrimary, fontSize: 30, fontWeight: '700', marginBottom: 20, textTransform: 'capitalize' },
   daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 18, padding: 20 },
-  dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700', textTransform: 'capitalize' },
+  dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
   primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' },
   primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
