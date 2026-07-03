@@ -5,7 +5,7 @@ import { getCalendarDays, weekDays } from '@/src/utils/calendar';
 
 type Props = {
   month: Date;
-  selectedDay: number;
+  selectedDay: number | null;
   markedDays?: number[];
   onSelectDay: (day: number) => void;
 };
@@ -32,7 +32,7 @@ export function MonthGrid({
 
       <View style={styles.grid}>
         {days.map((day, index) => {
-          const selected = day === selectedDay;
+          const selected = day !== null && day === selectedDay;
           const isToday = showingCurrentMonth && day === today.getDate();
           const marked = day ? markedDays.includes(day) : false;
 
