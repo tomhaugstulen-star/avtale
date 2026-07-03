@@ -11,6 +11,7 @@ import { addAppointment } from '@/src/services/appointmentStorage';
 import { cancelAppointmentNotification, scheduleAppointmentNotification } from '@/src/services/notificationService';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
+import { parseSpokenAppointment } from '@/src/utils/speechAppointmentParser';
 
 export default function NewAppointmentScreen() {
   const router = useRouter();
@@ -25,6 +26,12 @@ export default function NewAppointmentScreen() {
   const [time, setTime] = useState(initialTime);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  function handleDictation(text: string) {
+    const parsed = parseSpokenAppointment(text, time);
+    setTitle(parsed.title);
+    if (parsed.time) setTime(parsed.time);
+  }
 
   async function saveAppointment() {
     if (!title.trim() || saving) return;
@@ -71,7 +78,7 @@ export default function NewAppointmentScreen() {
 
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput autoFocus placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} value={title} onChangeText={setTitle} style={styles.textInput} />
-        <DictationButton accentColor={colors.private} onTranscript={setTitle} />
+        <DictationButton accentColor={colors.private} onTranscript={handleDictation} />
 
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable accessibilityRole="button" accessibilityLabel="Velg klokkeslett" onPress={() => setShowTimePicker(true)} style={styles.timeButton}>
