@@ -70,7 +70,7 @@ export default function CalendarScreen() {
           <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={styles.monthButton}>
             <Text style={styles.monthArrow}>‹</Text>
           </Pressable>
-          <Text adjustsFontSizeToFit minimumFontScale={0.72} numberOfLines={1} style={styles.monthTitle}>{monthTitle}</Text>
+          <Text numberOfLines={1} style={styles.monthTitle}>{monthTitle}</Text>
           <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={styles.monthButton}>
             <Text style={styles.monthArrow}>›</Text>
           </Pressable>
@@ -97,22 +97,22 @@ export default function CalendarScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { backgroundColor: colors.background, flex: 1, paddingBottom: 18, paddingHorizontal: 18 },
-  header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 8 },
-  backButton: { alignItems: 'center', height: 48, justifyContent: 'center', width: 48 },
-  backText: { color: colors.private, fontSize: 44, lineHeight: 46 },
-  title: { color: colors.textPrimary, fontSize: 30, fontWeight: '700' },
-  headerSpacer: { width: 48 },
-  monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 8, paddingHorizontal: 16, paddingVertical: 20 },
-  monthHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: 20 },
-  monthButton: { alignItems: 'center', flexShrink: 0, height: 44, justifyContent: 'center', width: 52 },
-  monthArrow: { color: colors.private, fontSize: 38, lineHeight: 40 },
-  monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 30, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
-  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 18, padding: 20 },
+  safeArea: { backgroundColor: colors.background, flex: 1, paddingBottom: 14, paddingHorizontal: 18 },
+  header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 2 },
+  backButton: { alignItems: 'center', height: 42, justifyContent: 'center', width: 44 },
+  backText: { color: colors.private, fontSize: 40, lineHeight: 42 },
+  title: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
+  headerSpacer: { width: 44 },
+  monthCard: { backgroundColor: colors.surface, borderRadius: 28, marginTop: 2, paddingHorizontal: 16, paddingVertical: 18 },
+  monthHeader: { alignItems: 'center', flexDirection: 'row', marginBottom: 16 },
+  monthButton: { alignItems: 'center', flexShrink: 0, height: 42, justifyContent: 'center', width: 44 },
+  monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
+  monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 26, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
+  daySection: { backgroundColor: colors.privateSoft, borderRadius: 24, marginTop: 14, padding: 18 },
   dayTitle: { color: colors.textPrimary, fontSize: 25, fontWeight: '700' },
   chooseText: { color: colors.textSecondary, fontSize: 20, fontWeight: '600' },
   errorText: { color: '#A33A3A', fontSize: 18, marginTop: 10 },
-  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 68, justifyContent: 'center', marginTop: 'auto' },
+  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 64, justifyContent: 'center', marginTop: 'auto' },
   disabledButton: { opacity: 0.45 },
   primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
 });
