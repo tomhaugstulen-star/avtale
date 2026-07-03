@@ -14,7 +14,8 @@
         {
           "faceIDPermission": "Avtale bruker Face ID for å beskytte kalenderen En Ny Dag."
         }
-      ]
+      ],
+      "expo-speech-recognition"
     ],
     "ios": {
       "supportsTablet": false,
