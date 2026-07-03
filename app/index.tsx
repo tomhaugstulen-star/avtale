@@ -53,7 +53,7 @@ export default function WelcomeScreen() {
             accent={colors.work}
             softBackground={colors.workSoft}
             icon={workIcon}
-            onPress={() => {}}
+            onPress={() => router.push('/work-lock')}
           />
         </View>
 
@@ -64,24 +64,10 @@ export default function WelcomeScreen() {
 }
 
 const styles = StyleSheet.create({
-  background: {
-    flex: 1,
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: 18,
-    paddingVertical: 14,
-  },
-  header: {
-    alignItems: 'center',
-    marginTop: 18,
-  },
-  sun: {
-    color: '#F1B542',
-    fontSize: 52,
-    lineHeight: 56,
-    marginBottom: 12,
-  },
+  background: { flex: 1 },
+  safeArea: { flex: 1, paddingHorizontal: 18, paddingVertical: 14 },
+  header: { alignItems: 'center', marginTop: 18 },
+  sun: { color: '#F1B542', fontSize: 52, lineHeight: 56, marginBottom: 12 },
   title: {
     color: colors.textPrimary,
     fontSize: 42,
@@ -96,11 +82,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
     textAlign: 'center',
   },
-  cards: {
-    flexDirection: 'row',
-    gap: 14,
-    marginTop: 36,
-  },
+  cards: { flexDirection: 'row', gap: 14, marginTop: 36 },
   privacy: {
     color: '#4B5563',
     fontSize: 14,
