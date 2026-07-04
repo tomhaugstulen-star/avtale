@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
@@ -10,18 +11,15 @@ type Props = {
   onPress: () => void;
 };
 
-export function CalendarChoiceCard({
-  title,
-  accent,
-  softBackground,
-  icon,
-  onPress,
-}: Props) {
+export function CalendarChoiceCard({ title, accent, softBackground, icon, onPress }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      onPress={onPress}
+      onPress={() => {
+        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        onPress();
+      }}
       style={({ pressed }) => [
         styles.card,
         { borderColor: accent, backgroundColor: softBackground },
@@ -29,15 +27,10 @@ export function CalendarChoiceCard({
       ]}
     >
       <Image source={icon} style={styles.icon} />
-      <Text
-        adjustsFontSizeToFit
-        minimumFontScale={0.8}
-        numberOfLines={2}
-        style={styles.title}
-      >
+      <Text adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={2} style={styles.title}>
         {title}
       </Text>
-      <View style={[styles.arrowCircle, { backgroundColor: accent }]}> 
+      <View style={[styles.arrowCircle, { backgroundColor: accent }]}>
         <Text style={styles.arrow}>›</Text>
       </View>
     </Pressable>
@@ -54,16 +47,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingVertical: 22,
   },
-  pressed: {
-    opacity: 0.82,
-    transform: [{ scale: 0.98 }],
-  },
-  icon: {
-    height: 68,
-    marginBottom: 22,
-    resizeMode: 'contain',
-    width: 68,
-  },
+  pressed: { opacity: 0.82, transform: [{ scale: 0.98 }] },
+  icon: { height: 68, marginBottom: 22, resizeMode: 'contain', width: 68 },
   title: {
     color: colors.textPrimary,
     fontSize: 25,
