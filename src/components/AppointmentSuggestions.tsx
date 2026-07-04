@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, Vibration, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -39,13 +39,23 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
   const suggestions = getSuggestions(appointments, input);
   if (suggestions.length === 0) return null;
 
+  function select(title: string) {
+    Vibration.vibrate(10);
+    onSelect(title);
+  }
+
   return (
     <View style={styles.dropdown}>
       {suggestions.map((item, index) => (
         <Pressable
+          accessibilityRole="button"
           key={item.title.toLocaleLowerCase('nb-NO')}
-          onPress={() => onSelect(item.title)}
-          style={[styles.option, index < suggestions.length - 1 && styles.divider]}
+          onPress={() => select(item.title)}
+          style={({ pressed }) => [
+            styles.option,
+            index < suggestions.length - 1 && styles.divider,
+            pressed && styles.pressed,
+          ]}
         >
           <Text style={[styles.optionText, { color: accentColor }]}>{item.title}</Text>
         </Pressable>
@@ -72,5 +82,6 @@ const styles = StyleSheet.create({
   },
   option: { justifyContent: 'center', minHeight: 50, paddingHorizontal: 16 },
   divider: { borderBottomColor: '#E5E7EB', borderBottomWidth: 1 },
+  pressed: { opacity: 0.62, transform: [{ scale: 0.99 }] },
   optionText: { fontSize: 19, fontWeight: '700' },
 });
