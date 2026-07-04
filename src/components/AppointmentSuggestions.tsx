@@ -1,4 +1,5 @@
-import { Pressable, StyleSheet, Text, Vibration, View } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -10,13 +11,16 @@ type Props = {
   onSelect: (title: string) => void;
 };
 
+type Suggestion = { title: string; count: number; latest: string };
+
 function getSuggestions(appointments: Appointment[], input: string) {
   const query = input.trim().toLocaleLowerCase('nb-NO');
   if (!query) return [];
 
-  const stats = new Map<string, { title: string; count: number; latest: string }>();
+  const stats = new Map<string, Suggestion>();
   appointments.forEach((item) => {
     const title = item.title.trim();
+    if (!title) return;
     const key = title.toLocaleLowerCase('nb-NO');
     const current = stats.get(key);
     stats.set(key, {
@@ -26,12 +30,17 @@ function getSuggestions(appointments: Appointment[], input: string) {
     });
   });
 
-  return [...stats.values()]
+  const ranked = [...stats.values()].sort((a, b) =>
+    b.count - a.count || b.latest.localeCompare(a.latest),
+  );
+
+  if (query.length === 1) return ranked.slice(0, 4);
+
+  return ranked
     .filter((item) => {
       const title = item.title.toLocaleLowerCase('nb-NO');
-      return title.startsWith(query) && title !== query;
+      return title.includes(query) && title !== query;
     })
-    .sort((a, b) => b.count - a.count || b.latest.localeCompare(a.latest))
     .slice(0, 4);
 }
 
@@ -39,8 +48,8 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
   const suggestions = getSuggestions(appointments, input);
   if (suggestions.length === 0) return null;
 
-  function select(title: string) {
-    Vibration.vibrate(10);
+  async function select(title: string) {
+    await Haptics.selectionAsync();
     onSelect(title);
   }
 
@@ -67,21 +76,23 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
 const styles = StyleSheet.create({
   dropdown: {
     backgroundColor: colors.surface,
+    borderColor: '#E5E7EB',
     borderRadius: 18,
-    elevation: 8,
+    borderWidth: 1,
+    elevation: 12,
     left: 0,
     overflow: 'hidden',
     position: 'absolute',
     right: 0,
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.16,
-    shadowRadius: 10,
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.22,
+    shadowRadius: 14,
     top: 78,
-    zIndex: 20,
+    zIndex: 50,
   },
-  option: { justifyContent: 'center', minHeight: 50, paddingHorizontal: 16 },
+  option: { backgroundColor: colors.surface, justifyContent: 'center', minHeight: 54, paddingHorizontal: 16 },
   divider: { borderBottomColor: '#E5E7EB', borderBottomWidth: 1 },
-  pressed: { opacity: 0.62, transform: [{ scale: 0.99 }] },
+  pressed: { backgroundColor: '#F3F4F6', opacity: 0.78, transform: [{ scale: 0.985 }] },
   optionText: { fontSize: 19, fontWeight: '700' },
 });
