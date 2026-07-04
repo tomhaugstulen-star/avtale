@@ -1,17 +1,16 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { DictationButton } from '@/src/components/DictationButton';
+import { AppointmentSuggestions } from '@/src/components/AppointmentSuggestions';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { scheduleAppointmentNotification } from '@/src/services/notificationService';
-import { addWorkAppointment } from '@/src/services/workAppointmentStorage';
+import { addWorkAppointment, getWorkAppointments } from '@/src/services/workAppointmentStorage';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
-import { parseSpokenAppointment } from '@/src/utils/speechAppointmentParser';
 
 export default function WorkNewAppointmentScreen() {
   const router = useRouter();
@@ -24,14 +23,13 @@ export default function WorkNewAppointmentScreen() {
   }, [selectedDate]);
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(initialTime);
+  const [history, setHistory] = useState<Appointment[]>([]);
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
-  function handleDictation(text: string) {
-    const parsed = parseSpokenAppointment(text, time);
-    setTitle(parsed.title);
-    if (parsed.time) setTime(parsed.time);
-  }
+  useEffect(() => {
+    getWorkAppointments().then(setHistory).catch(() => setHistory([]));
+  }, []);
 
   async function save() {
     if (!title.trim() || saving) return;
@@ -39,8 +37,7 @@ export default function WorkNewAppointmentScreen() {
     try {
       const startDate = combineDateAndTime(selectedDate, time);
       const notificationId = await scheduleAppointmentNotification(title.trim(), startDate);
-      const item: Appointment = { id: `${Date.now()}`, title: title.trim(), startDate: startDate.toISOString(), calendarType: 'work', createdAt: new Date().toISOString(), notificationId };
-      await addWorkAppointment(item);
+      await addWorkAppointment({ id: `${Date.now()}`, title: title.trim(), startDate: startDate.toISOString(), calendarType: 'work', createdAt: new Date().toISOString(), notificationId });
       router.back();
     } catch {
       setSaving(false);
@@ -59,7 +56,7 @@ export default function WorkNewAppointmentScreen() {
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput autoFocus value={title} onChangeText={setTitle} placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} style={styles.textInput} />
-        <DictationButton accentColor={colors.work} onTranscript={handleDictation} />
+        <AppointmentSuggestions appointments={history} input={title} accentColor={colors.work} onSelect={setTitle} />
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
@@ -75,7 +72,7 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between' }, headerButton: { alignItems: 'center', height: 48, justifyContent: 'center', width: 48 },
   closeText: { color: colors.work, fontSize: 34 }, screenTitle: { color: colors.textPrimary, fontSize: 28, fontWeight: '700' },
   dateCard: { backgroundColor: colors.workSoft, borderRadius: 22, marginTop: 12, padding: 18 }, dateLabel: { color: colors.textSecondary, fontSize: 16, fontWeight: '600' },
-  dateText: { color: colors.textPrimary, fontSize: 24, fontWeight: '700', marginTop: 4, textTransform: 'capitalize' }, label: { color: colors.textPrimary, fontSize: 20, fontWeight: '600', marginBottom: 10, marginTop: 24 },
+  dateText: { color: colors.textPrimary, fontSize: 24, fontWeight: '700', marginTop: 4, textTransform: 'capitalize' }, label: { color: colors.textPrimary, fontSize: 20, fontWeight: '600', marginBottom: 10, marginTop: 20 },
   textInput: { backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, color: colors.textPrimary, fontSize: 26, minHeight: 72, paddingHorizontal: 18 },
   timeButton: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, flexDirection: 'row', minHeight: 72, paddingHorizontal: 18 },
   timeText: { color: colors.textPrimary, flex: 1, fontSize: 28, fontWeight: '600' }, chevron: { color: colors.work, fontSize: 22 },
