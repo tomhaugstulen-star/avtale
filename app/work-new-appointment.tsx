@@ -55,8 +55,10 @@ export default function WorkNewAppointmentScreen() {
         </View>
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
         <Text style={styles.label}>Hva skal du gjøre?</Text>
-        <TextInput autoFocus value={title} onChangeText={setTitle} placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} style={styles.textInput} />
-        <AppointmentSuggestions appointments={history} input={title} accentColor={colors.work} onSelect={setTitle} />
+        <View style={styles.inputArea}>
+          <TextInput autoFocus value={title} onChangeText={setTitle} placeholder="Skriv avtalen" placeholderTextColor={colors.textSecondary} style={styles.textInput} />
+          <AppointmentSuggestions appointments={history} input={title} accentColor={colors.work} onSelect={setTitle} />
+        </View>
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
@@ -73,6 +75,7 @@ const styles = StyleSheet.create({
   closeText: { color: colors.work, fontSize: 34 }, screenTitle: { color: colors.textPrimary, fontSize: 28, fontWeight: '700' },
   dateCard: { backgroundColor: colors.workSoft, borderRadius: 22, marginTop: 12, padding: 18 }, dateLabel: { color: colors.textSecondary, fontSize: 16, fontWeight: '600' },
   dateText: { color: colors.textPrimary, fontSize: 24, fontWeight: '700', marginTop: 4, textTransform: 'capitalize' }, label: { color: colors.textPrimary, fontSize: 20, fontWeight: '600', marginBottom: 10, marginTop: 20 },
+  inputArea: { position: 'relative', zIndex: 20 },
   textInput: { backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, color: colors.textPrimary, fontSize: 26, minHeight: 72, paddingHorizontal: 18 },
   timeButton: { alignItems: 'center', backgroundColor: colors.surface, borderColor: colors.work, borderRadius: 20, borderWidth: 1.5, flexDirection: 'row', minHeight: 72, paddingHorizontal: 18 },
   timeText: { color: colors.textPrimary, flex: 1, fontSize: 28, fontWeight: '600' }, chevron: { color: colors.work, fontSize: 22 },
