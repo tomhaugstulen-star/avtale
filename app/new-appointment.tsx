@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
 import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
@@ -31,6 +32,10 @@ export default function NewAppointmentScreen() {
     getAppointments().then(setHistory).catch(() => setHistory([]));
   }, []);
 
+  function tap() {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+
   async function save() {
     if (!title.trim() || saving) return;
     setSaving(true);
@@ -39,6 +44,7 @@ export default function NewAppointmentScreen() {
     try {
       notificationId = await scheduleAppointmentNotification(title.trim(), startDate);
       await addAppointment({ id: `${Date.now()}`, title: title.trim(), startDate: startDate.toISOString(), calendarType: 'private', createdAt: new Date().toISOString(), notificationId });
+      void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.back();
     } catch {
       await cancelAppointmentNotification(notificationId);
@@ -52,7 +58,7 @@ export default function NewAppointmentScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.headerButton}><Text style={styles.closeText}>x</Text></Pressable>
+          <Pressable onPressIn={tap} onPress={() => router.back()} style={styles.headerButton}><Text style={styles.closeText}>x</Text></Pressable>
           <Text style={styles.screenTitle}>Ny avtale</Text><View style={styles.headerButton} />
         </View>
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
@@ -62,9 +68,9 @@ export default function NewAppointmentScreen() {
           <AppointmentSuggestions appointments={history} input={title} accentColor={colors.private} onSelect={setTitle} />
         </View>
         <Text style={styles.label}>Klokkeslett</Text>
-        <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
+        <Pressable onPressIn={tap} onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
-        <Pressable disabled={disabled} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer...' : 'Lagre avtale'}</Text></Pressable>
+        <Pressable disabled={disabled} onPressIn={disabled ? undefined : tap} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer...' : 'Lagre avtale'}</Text></Pressable>
       </View>
       <TimePickerModal visible={showPicker} value={time} onChange={setTime} onClose={() => setShowPicker(false)} />
     </SafeAreaView>
