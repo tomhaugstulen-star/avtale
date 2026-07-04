@@ -16,13 +16,13 @@ function getSuggestions(appointments: Appointment[], input: string) {
   const query = input.trim().toLocaleLowerCase('nb-NO');
   if (!query) return [];
 
-  const allTitles = [
+  const titles = [
     ...appointmentChoices,
     ...appointments.map((item) => item.title.trim()),
   ].filter(Boolean);
 
   const unique = [...new Map(
-    allTitles.map((title) => [title.toLocaleLowerCase('nb-NO'), title]),
+    titles.map((title) => [title.toLocaleLowerCase('nb-NO'), title]),
   ).values()];
 
   return unique
@@ -69,8 +69,13 @@ const styles = StyleSheet.create({
     borderColor: '#D1D5DB',
     borderRadius: 18,
     borderWidth: 1,
-    marginTop: 8,
+    elevation: 16,
+    left: 0,
     overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    top: 80,
+    zIndex: 100,
   },
   option: {
     backgroundColor: colors.surface,
