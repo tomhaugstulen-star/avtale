@@ -40,7 +40,7 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
   if (suggestions.length === 0) return null;
 
   return (
-    <View style={styles.dropdown}>
+    <View style={styles.list}>
       {suggestions.map((title, index) => (
         <Pressable
           accessibilityRole="button"
@@ -64,25 +64,21 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
 }
 
 const styles = StyleSheet.create({
-  dropdown: {
+  list: {
     backgroundColor: colors.surface,
     borderColor: '#D1D5DB',
     borderRadius: 18,
     borderWidth: 1,
-    elevation: 16,
-    left: 0,
+    marginTop: 8,
     overflow: 'hidden',
-    position: 'absolute',
-    right: 0,
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.24,
-    shadowRadius: 14,
-    top: 78,
-    zIndex: 100,
   },
-  option: { backgroundColor: colors.surface, justifyContent: 'center', minHeight: 56, paddingHorizontal: 16 },
+  option: {
+    backgroundColor: colors.surface,
+    justifyContent: 'center',
+    minHeight: 54,
+    paddingHorizontal: 16,
+  },
   divider: { borderBottomColor: '#E5E7EB', borderBottomWidth: 1 },
-  pressed: { opacity: 0.7, transform: [{ scale: 0.985 }] },
+  pressed: { opacity: 0.7, transform: [{ scale: 0.99 }] },
   optionText: { fontSize: 19, fontWeight: '700' },
 });
