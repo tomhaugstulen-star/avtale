@@ -1,4 +1,4 @@
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -12,22 +12,27 @@ type Props = {
 
 function getSuggestions(appointments: Appointment[], input: string) {
   const query = input.trim().toLocaleLowerCase('nb-NO');
-  const stats = new Map<string, { title: string; count: number; latest: string }>();
+  if (!query) return [];
 
+  const stats = new Map<string, { title: string; count: number; latest: string }>();
   appointments.forEach((item) => {
-    const key = item.title.trim().toLocaleLowerCase('nb-NO');
+    const title = item.title.trim();
+    const key = title.toLocaleLowerCase('nb-NO');
     const current = stats.get(key);
     stats.set(key, {
-      title: item.title.trim(),
+      title,
       count: (current?.count ?? 0) + 1,
       latest: current && current.latest > item.startDate ? current.latest : item.startDate,
     });
   });
 
   return [...stats.values()]
-    .filter((item) => !query || item.title.toLocaleLowerCase('nb-NO').includes(query))
+    .filter((item) => {
+      const title = item.title.toLocaleLowerCase('nb-NO');
+      return title.startsWith(query) && title !== query;
+    })
     .sort((a, b) => b.count - a.count || b.latest.localeCompare(a.latest))
-    .slice(0, 6);
+    .slice(0, 4);
 }
 
 export function AppointmentSuggestions({ appointments, input, accentColor, onSelect }: Props) {
@@ -35,27 +40,37 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
   if (suggestions.length === 0) return null;
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Tidligere avtaler</Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.row}>
-        {suggestions.map((item) => (
-          <Pressable
-            key={item.title.toLocaleLowerCase('nb-NO')}
-            onPress={() => onSelect(item.title)}
-            style={[styles.chip, { borderColor: accentColor }]}
-          >
-            <Text style={[styles.chipText, { color: accentColor }]}>{item.title}</Text>
-          </Pressable>
-        ))}
-      </ScrollView>
+    <View style={styles.dropdown}>
+      {suggestions.map((item, index) => (
+        <Pressable
+          key={item.title.toLocaleLowerCase('nb-NO')}
+          onPress={() => onSelect(item.title)}
+          style={[styles.option, index < suggestions.length - 1 && styles.divider]}
+        >
+          <Text style={[styles.optionText, { color: accentColor }]}>{item.title}</Text>
+        </Pressable>
+      ))}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { marginTop: 10 },
-  label: { color: colors.textSecondary, fontSize: 15, fontWeight: '600', marginBottom: 8 },
-  row: { gap: 8, paddingRight: 18 },
-  chip: { backgroundColor: colors.surface, borderRadius: 18, borderWidth: 1.5, paddingHorizontal: 14, paddingVertical: 9 },
-  chipText: { fontSize: 17, fontWeight: '700' },
+  dropdown: {
+    backgroundColor: colors.surface,
+    borderRadius: 18,
+    elevation: 8,
+    left: 0,
+    overflow: 'hidden',
+    position: 'absolute',
+    right: 0,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.16,
+    shadowRadius: 10,
+    top: 78,
+    zIndex: 20,
+  },
+  option: { justifyContent: 'center', minHeight: 50, paddingHorizontal: 16 },
+  divider: { borderBottomColor: '#E5E7EB', borderBottomWidth: 1 },
+  optionText: { fontSize: 19, fontWeight: '700' },
 });
