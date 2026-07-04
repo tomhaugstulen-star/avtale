@@ -33,23 +33,27 @@ function getSuggestions(appointments: Appointment[], input: string) {
   const ranked = [...stats.values()].sort((a, b) =>
     b.count - a.count || b.latest.localeCompare(a.latest),
   );
+  const startsWith = ranked.filter((item) =>
+    item.title.toLocaleLowerCase('nb-NO').startsWith(query),
+  );
+  const contains = ranked.filter((item) => {
+    const title = item.title.toLocaleLowerCase('nb-NO');
+    return title.includes(query) && !title.startsWith(query);
+  });
 
-  if (query.length === 1) return ranked.slice(0, 4);
-
-  return ranked
-    .filter((item) => {
-      const title = item.title.toLocaleLowerCase('nb-NO');
-      return title.includes(query) && title !== query;
-    })
-    .slice(0, 4);
+  return [...startsWith, ...contains].slice(0, 4);
 }
 
 export function AppointmentSuggestions({ appointments, input, accentColor, onSelect }: Props) {
   const suggestions = getSuggestions(appointments, input);
   if (suggestions.length === 0) return null;
 
-  async function select(title: string) {
-    await Haptics.selectionAsync();
+  function pressFeedback() {
+    void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  }
+
+  function select(title: string) {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
     onSelect(title);
   }
 
@@ -59,6 +63,7 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
         <Pressable
           accessibilityRole="button"
           key={item.title.toLocaleLowerCase('nb-NO')}
+          onPressIn={pressFeedback}
           onPress={() => select(item.title)}
           style={({ pressed }) => [
             styles.option,
