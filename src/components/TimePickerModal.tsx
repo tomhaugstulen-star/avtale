@@ -1,3 +1,4 @@
+import * as Haptics from 'expo-haptics';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
@@ -16,17 +17,26 @@ function changeTime(value: Date, hours: number, minutes: number) {
   return next;
 }
 
+function feedback() {
+  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+}
+
 export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
   const hour = value.getHours().toString().padStart(2, '0');
   const minute = value.getMinutes().toString().padStart(2, '0');
 
+  function close() {
+    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    onClose();
+  }
+
   return (
-    <Modal animationType="slide" transparent visible={visible} onRequestClose={onClose}>
+    <Modal animationType="slide" transparent visible={visible} onRequestClose={close}>
       <View style={styles.backdrop}>
         <View style={styles.sheet}>
           <View style={styles.header}>
             <Text style={styles.title}>Velg klokkeslett</Text>
-            <Pressable accessibilityRole="button" onPress={onClose} style={styles.doneButton}>
+            <Pressable accessibilityRole="button" onPressIn={feedback} onPress={close} style={styles.doneButton}>
               <Text style={styles.doneText}>Ferdig</Text>
             </Pressable>
           </View>
@@ -60,14 +70,19 @@ type TimeColumnProps = {
 };
 
 function TimeColumn({ label, value, onUp, onDown }: TimeColumnProps) {
+  function adjust(action: () => void) {
+    feedback();
+    action();
+  }
+
   return (
     <View style={styles.column}>
       <Text style={styles.columnLabel}>{label}</Text>
-      <Pressable onPress={onUp} style={styles.adjustButton}>
+      <Pressable onPress={() => adjust(onUp)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}>
         <Text style={styles.adjustText}>＋</Text>
       </Pressable>
       <Text style={styles.value}>{value}</Text>
-      <Pressable onPress={onDown} style={styles.adjustButton}>
+      <Pressable onPress={() => adjust(onDown)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}>
         <Text style={styles.adjustText}>−</Text>
       </Pressable>
     </View>
@@ -85,6 +100,7 @@ const styles = StyleSheet.create({
   column: { alignItems: 'center', minWidth: 120 },
   columnLabel: { color: colors.textSecondary, fontSize: 16, fontWeight: '600' },
   adjustButton: { alignItems: 'center', height: 52, justifyContent: 'center', width: 72 },
+  pressed: { opacity: 0.65, transform: [{ scale: 0.94 }] },
   adjustText: { color: colors.private, fontSize: 36, fontWeight: '600' },
   value: { color: colors.textPrimary, fontSize: 44, fontWeight: '700', marginVertical: 4 },
   separator: { color: colors.textPrimary, fontSize: 44, fontWeight: '700', marginHorizontal: 4, marginTop: 26 },
