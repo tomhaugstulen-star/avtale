@@ -21,7 +21,11 @@
       "supportsTablet": false,
       "bundleIdentifier": "no.haugstulen.avtale",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSLocalNetworkUsageDescription": "Avtale kobler til kalenderen på PC-en din når begge enhetene er på samme nettverk.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
       }
     },
     "android": {
