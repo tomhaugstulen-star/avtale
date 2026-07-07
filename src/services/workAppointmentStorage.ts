@@ -40,3 +40,7 @@ export async function deleteWorkAppointment(id: string) {
   const items = await getWorkAppointments();
   await saveAppointments(items.filter((item) => item.id !== id));
 }
+
+export async function replaceWorkAppointments(items: Appointment[]) {
+  await saveAppointments(items);
+}
