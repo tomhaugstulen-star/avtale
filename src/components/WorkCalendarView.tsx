@@ -61,11 +61,11 @@ export function WorkCalendarView() {
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.monthHeader}>
-          <Pressable onPress={() => changeMonth(-1)} style={styles.arrowButton}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Forrige måned" onPress={() => changeMonth(-1)} style={styles.arrowButton}>
             <Text style={styles.arrowText}>{'<'}</Text>
           </Pressable>
-          <Text style={styles.monthTitle}>{getMonthTitle(month)}</Text>
-          <Pressable onPress={() => changeMonth(1)} style={styles.arrowButton}>
+          <Text numberOfLines={1} style={styles.monthTitle}>{getMonthTitle(month)}</Text>
+          <Pressable accessibilityRole="button" accessibilityLabel="Neste måned" onPress={() => changeMonth(1)} style={styles.arrowButton}>
             <Text style={styles.arrowText}>{'>'}</Text>
           </Pressable>
         </View>
@@ -78,18 +78,15 @@ export function WorkCalendarView() {
         />
       </View>
 
-      <Text style={styles.helpText}>Trykk på en dato for å se avtalene den dagen.</Text>
-      {!!syncText && <Text style={styles.syncText}>{syncText}</Text>}
+      <Text style={styles.helpText}>Trykk på en dato for å se avtalene.</Text>
+      {!!syncText && <Text numberOfLines={2} style={styles.syncText}>{syncText}</Text>}
 
       <View style={styles.actions}>
-        <Pressable onPress={openToday} style={styles.button}>
-          <Text style={styles.buttonText}>Dagens avtaler</Text>
+        <Pressable accessibilityRole="button" onPress={openToday} style={styles.button}>
+          <Text numberOfLines={1} style={styles.buttonText}>Dagens avtaler</Text>
         </Pressable>
-        <Pressable onPress={() => router.push('/work-appointments')} style={styles.secondaryButton}>
-          <Text style={styles.secondaryText}>Alle mine avtaler</Text>
-        </Pressable>
-        <Pressable onPress={() => router.push('/work-sync')} style={styles.syncButton}>
-          <Text style={styles.syncButtonText}>PC-synk</Text>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/work-appointments')} style={styles.secondaryButton}>
+          <Text numberOfLines={1} style={styles.secondaryText}>Alle avtaler</Text>
         </Pressable>
       </View>
     </View>
@@ -102,14 +99,12 @@ const styles = StyleSheet.create({
   monthHeader: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16 },
   arrowButton: { alignItems: 'center', height: 42, justifyContent: 'center', width: 44 },
   arrowText: { color: colors.work, fontSize: 30 },
-  monthTitle: { color: colors.textPrimary, fontSize: 20, textTransform: 'capitalize' },
-  helpText: { color: colors.textSecondary, fontSize: 15, marginTop: 14, textAlign: 'center' },
-  syncText: { color: colors.textSecondary, fontSize: 13, marginTop: 8, textAlign: 'center' },
-  actions: { gap: 10, marginTop: 'auto' },
-  button: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 22, height: 64, justifyContent: 'center' },
-  buttonText: { color: colors.white, fontSize: 22, fontWeight: '700' },
-  secondaryButton: { alignItems: 'center', borderColor: colors.work, borderRadius: 18, borderWidth: 1.5, height: 48, justifyContent: 'center' },
-  secondaryText: { color: colors.work, fontSize: 18, fontWeight: '700' },
-  syncButton: { alignItems: 'center', height: 40, justifyContent: 'center' },
-  syncButtonText: { color: colors.textSecondary, fontSize: 16, fontWeight: '600' },
+  monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 20, textAlign: 'center', textTransform: 'capitalize' },
+  helpText: { color: colors.textSecondary, fontSize: 14, marginTop: 10, textAlign: 'center' },
+  syncText: { color: colors.textSecondary, fontSize: 13, marginTop: 5, textAlign: 'center' },
+  actions: { flexDirection: 'row', gap: 10, marginTop: 14 },
+  button: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 18, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  buttonText: { color: colors.white, fontSize: 17, fontWeight: '700' },
+  secondaryButton: { alignItems: 'center', borderColor: colors.work, borderRadius: 18, borderWidth: 1.5, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  secondaryText: { color: colors.work, fontSize: 17, fontWeight: '700' },
 });
