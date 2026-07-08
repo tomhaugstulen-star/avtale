@@ -1,15 +1,28 @@
-import { useFocusEffect, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
+import { useCallback, useMemo, useState } from 'react';
 import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getAppointments } from '@/src/services/appointmentStorage';
+import { getAppointmentsForMonth } from '@/src/utils/appointments';
+import { getMonthTitle } from '@/src/utils/calendar';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
+
+function getMonthFilter(yearValue?: string, monthValue?: string) {
+  const year = Number(yearValue);
+  const month = Number(monthValue);
+  if (!Number.isInteger(year) || !Number.isInteger(month) || month < 0 || month > 11) {
+    return null;
+  }
+  return new Date(year, month, 1);
+}
 
 export default function AppointmentsScreen() {
   const router = useRouter();
+  const { month, year } = useLocalSearchParams<{ month?: string; year?: string }>();
+  const monthFilter = useMemo(() => getMonthFilter(year, month), [month, year]);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loadError, setLoadError] = useState('');
 
@@ -22,9 +35,10 @@ export default function AppointmentsScreen() {
     }, []),
   );
 
-  function openAppointment(item: Appointment) {
-    router.push({ pathname: '/edit-appointment', params: { id: item.id } });
-  }
+  const visibleAppointments = monthFilter
+    ? getAppointmentsForMonth(appointments, monthFilter)
+    : appointments;
+  const title = monthFilter ? getMonthTitle(monthFilter) : 'Mine avtaler';
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -32,23 +46,27 @@ export default function AppointmentsScreen() {
         <Pressable accessibilityRole="button" accessibilityLabel="Tilbake" onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text style={styles.title}>Mine avtaler</Text>
+        <Text numberOfLines={1} style={styles.headerTitle}>{title}</Text>
         <View style={styles.headerSpacer} />
       </View>
 
       {loadError ? <Text style={styles.errorText}>{loadError}</Text> : (
         <FlatList
           contentContainerStyle={styles.listContent}
-          data={appointments}
+          data={visibleAppointments}
           keyExtractor={(item) => item.id}
-          ListEmptyComponent={<Text style={styles.emptyText}>Ingen avtaler ennå</Text>}
+          ListEmptyComponent={(
+            <Text style={styles.emptyText}>
+              {monthFilter ? 'Ingen avtaler denne måneden' : 'Ingen avtaler ennå'}
+            </Text>
+          )}
           renderItem={({ item }) => {
             const date = new Date(item.startDate);
             return (
               <Pressable
                 accessibilityRole="button"
                 accessibilityLabel={`Rediger ${item.title}`}
-                onPress={() => openAppointment(item)}
+                onPress={() => router.push({ pathname: '/edit-appointment', params: { id: item.id } })}
                 style={({ pressed }) => [styles.card, pressed && styles.pressed]}
               >
                 <View style={styles.cardText}>
@@ -72,7 +90,7 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
   backButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
   backText: { color: colors.private, fontSize: 40, lineHeight: 42 },
-  title: { color: colors.textPrimary, fontSize: 26, fontWeight: '700' },
+  headerTitle: { color: colors.textPrimary, flex: 1, fontSize: 25, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
   headerSpacer: { width: 44 },
   listContent: { gap: 12, paddingBottom: 24, paddingTop: 14 },
   card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 },
