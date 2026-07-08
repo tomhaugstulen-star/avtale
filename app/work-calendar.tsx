@@ -1,7 +1,8 @@
 import { useRouter } from 'expo-router';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { WorkCalendarView } from '@/src/components/WorkCalendarView';
 import { colors } from '@/src/constants/colors';
 import { lockWorkSession } from '@/src/services/workSession';
