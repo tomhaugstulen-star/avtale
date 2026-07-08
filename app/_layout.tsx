@@ -76,7 +76,11 @@ export default function RootLayout() {
 
 const styles = StyleSheet.create({
   privacyOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    bottom: 0,
+    left: 0,
+    position: 'absolute',
+    right: 0,
+    top: 0,
     alignItems: 'center',
     backgroundColor: colors.background,
     justifyContent: 'center',
