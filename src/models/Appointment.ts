@@ -11,4 +11,5 @@ export type Appointment = {
   notificationId?: string;
   source?: AppointmentSource;
   externalId?: string;
+  initials?: string;
 };
