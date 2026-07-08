@@ -1,9 +1,10 @@
 import * as LocalAuthentication from 'expo-local-authentication';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import {
   PcSyncSettingsCard,
   ReminderSettingsCard,
@@ -111,7 +112,7 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.headerButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Tilbake" onPress={() => router.back()} style={styles.headerButton}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
         <Text style={styles.title}>Innstillinger</Text>
@@ -130,7 +131,7 @@ export default function SettingsScreen() {
         />
         <ToggleSettingsCard
           title="Haptikk"
-          description="Fysisk respons på trykk og lagring."
+          description="Fysisk respons på alle knapper og lagring."
           value={vibration}
           onChange={setVibration}
         />
@@ -146,6 +147,7 @@ export default function SettingsScreen() {
       </ScrollView>
 
       <Pressable
+        accessibilityRole="button"
         disabled={saving}
         onPress={save}
         style={[styles.saveButton, saving && styles.disabled]}
