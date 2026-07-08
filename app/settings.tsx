@@ -37,6 +37,14 @@ export default function SettingsScreen() {
     } finally { setSaving(false); }
   }
 
+  async function testNotification() {
+    try {
+      await sendTestNotification(settings);
+    } catch (error) {
+      Alert.alert('Kunne ikke sende testvarsel', error instanceof Error ? error.message : 'Ukjent feil.');
+    }
+  }
+
   function confirmDisconnect() {
     Alert.alert('Koble fra PC?', 'Importerte Opptatt-perioder fjernes. Lokale avtaler beholdes.', [
       { text: 'Avbryt', style: 'cancel' },
@@ -64,7 +72,7 @@ export default function SettingsScreen() {
         </View>
         <View style={styles.card}>
           <SettingSwitch title="Varslingslyd" description="Standard iPhone-lyd." value={settings.soundEnabled} onChange={(soundEnabled) => setSettings({ ...settings, soundEnabled })} />
-          <Pressable onPress={() => sendTestNotification(settings)} style={styles.secondaryButton}><Text style={styles.secondaryText}>Send testvarsel</Text></Pressable>
+          <Pressable onPress={testNotification} style={styles.secondaryButton}><Text style={styles.secondaryText}>Send testvarsel</Text></Pressable>
         </View>
         <View style={styles.card}>
           <SettingSwitch title="Haptikk" description="Fysisk respons på trykk og lagring." value={vibration} onChange={setVibration} />
