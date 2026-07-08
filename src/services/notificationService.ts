@@ -92,13 +92,14 @@ export async function rescheduleAllAppointmentNotifications() {
   await replaceWorkAppointments(await rescheduleItems(workItems, settings, permissionGranted));
 }
 
-export async function sendTestNotification(settings: NotificationSettings) {
+export async function sendTestNotification(settings?: NotificationSettings) {
+  const activeSettings = settings ?? await getNotificationSettings();
   if (!(await hasPermission())) throw new Error('Varslinger er ikke tillatt på iPhone.');
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Testvarsel fra Avtale',
-      body: settings.soundEnabled ? 'Standard iPhone-lyd er valgt.' : 'Lydløs varsling er valgt.',
-      ...(settings.soundEnabled ? { sound: 'default' as const } : {}),
+      body: activeSettings.soundEnabled ? 'Standard iPhone-lyd er valgt.' : 'Lydløs varsling er valgt.',
+      ...(activeSettings.soundEnabled ? { sound: 'default' as const } : {}),
     },
     trigger: null,
   });
