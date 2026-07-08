@@ -4,7 +4,6 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MonthGrid } from '@/src/components/MonthGrid';
-import { SelectedDayAppointments } from '@/src/components/SelectedDayAppointments';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getAppointments } from '@/src/services/appointmentStorage';
@@ -18,9 +17,6 @@ export default function CalendarScreen() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const monthTitle = getMonthTitle(month);
-  const selectedDate = selectedDay
-    ? new Date(month.getFullYear(), month.getMonth(), selectedDay, 12)
-    : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -36,9 +32,14 @@ export default function CalendarScreen() {
     setSelectedDay(null);
   }
 
-  function openNewAppointment() {
-    if (!selectedDate) return;
-    router.push({ pathname: '/new-appointment', params: { date: selectedDate.toISOString() } });
+  function openDay(day: number) {
+    setSelectedDay(day);
+    const date = new Date(month.getFullYear(), month.getMonth(), day, 12);
+    router.push({ pathname: '/day-appointments', params: { date: date.toISOString() } });
+  }
+
+  function openToday() {
+    router.push({ pathname: '/day-appointments', params: { date: today.toISOString() } });
   }
 
   return (
@@ -61,22 +62,22 @@ export default function CalendarScreen() {
             <Text style={styles.monthArrow}>›</Text>
           </Pressable>
         </View>
-        <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
+        <MonthGrid
+          month={month}
+          selectedDay={selectedDay}
+          markedDays={markedDays}
+          onSelectDay={openDay}
+        />
       </View>
 
-      <SelectedDayAppointments
-        accentColor={colors.private}
-        appointments={appointments}
-        date={selectedDate}
-        onPressAppointment={(appointment) => router.push({ pathname: '/edit-appointment', params: { id: appointment.id } })}
-      />
+      <Text style={styles.helpText}>Trykk på en dato for å se avtalene den dagen.</Text>
 
       <View style={styles.actions}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" disabled={!selectedDay} onPress={openNewAppointment} style={[styles.primaryButton, !selectedDay && styles.disabledButton]}>
-          <Text style={styles.primaryButtonText}>＋ Ny avtale</Text>
+        <Pressable accessibilityRole="button" onPress={openToday} style={styles.primaryButton}>
+          <Text style={styles.primaryButtonText}>Dagens avtaler</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" accessibilityLabel="Mine avtaler" onPress={() => router.push('/appointments')} style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Mine avtaler</Text>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/appointments')} style={styles.secondaryButton}>
+          <Text style={styles.secondaryButtonText}>Alle mine avtaler</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -97,10 +98,10 @@ const styles = StyleSheet.create({
   nextButton: { right: 0 },
   monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
   monthTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '400', paddingHorizontal: 44, textAlign: 'center', textTransform: 'capitalize', width: '100%' },
+  helpText: { color: colors.textSecondary, fontSize: 15, marginTop: 14, textAlign: 'center' },
   actions: { gap: 10, marginTop: 'auto' },
   primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 64, justifyContent: 'center' },
-  disabledButton: { opacity: 0.45 },
-  primaryButtonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
+  primaryButtonText: { color: colors.white, fontSize: 22, fontWeight: '700' },
   secondaryButton: { alignItems: 'center', borderColor: colors.private, borderRadius: 18, borderWidth: 1.5, height: 48, justifyContent: 'center' },
   secondaryButtonText: { color: colors.private, fontSize: 18, fontWeight: '700' },
 });
