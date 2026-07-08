@@ -52,13 +52,6 @@ export default function DayAppointmentsScreen() {
           pathname: '/new-appointment',
           params: { date: date.toISOString() },
         })}
-        onOpenMonth={() => router.push({
-          pathname: '/appointments',
-          params: {
-            month: String(date.getMonth()),
-            year: String(date.getFullYear()),
-          },
-        })}
         onPressAppointment={(appointment) => router.push({
           pathname: '/edit-appointment',
           params: { id: appointment.id },
