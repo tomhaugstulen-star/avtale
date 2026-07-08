@@ -1,6 +1,7 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Appointment } from '@/src/models/Appointment';
+import { cancelAppointmentNotification, scheduleAppointmentNotification } from '@/src/services/notificationService';
 import { getWorkAppointments, replaceWorkAppointments } from '@/src/services/workAppointmentStorage';
 
 const CONNECTION_KEY = 'workCalendarSyncConnection';
@@ -49,6 +50,10 @@ export async function getLastWorkSync() {
 export async function disconnectWorkCalendar() {
   await AsyncStorage.multiRemove([CONNECTION_KEY, LAST_SYNC_KEY]);
   const current = await getWorkAppointments();
+  const imported = current.filter((item) => item.source === 'website');
+  for (const item of imported) {
+    await cancelAppointmentNotification(item.notificationId);
+  }
   await replaceWorkAppointments(current.filter((item) => item.source !== 'website'));
 }
 
@@ -77,9 +82,19 @@ export async function syncWorkCalendar() {
   const remote = await response.json() as RemoteCalendar;
   const current = await getWorkAppointments();
   const localOnly = current.filter((item) => item.source !== 'website');
-  const imported = Array.isArray(remote.appointments)
-    ? remote.appointments.map(mapRemoteAppointment)
-    : [];
+  const previousImported = current.filter((item) => item.source === 'website');
+
+  for (const item of previousImported) {
+    await cancelAppointmentNotification(item.notificationId);
+  }
+
+  const imported: Appointment[] = [];
+  const remoteItems = Array.isArray(remote.appointments) ? remote.appointments : [];
+  for (const item of remoteItems) {
+    const mapped = mapRemoteAppointment(item);
+    const notificationId = await scheduleAppointmentNotification('Opptatt', new Date(mapped.startDate));
+    imported.push({ ...mapped, notificationId });
+  }
 
   await replaceWorkAppointments([...localOnly, ...imported]);
   const syncedAt = new Date().toISOString();
