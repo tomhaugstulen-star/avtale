@@ -19,6 +19,7 @@ Noter iPhone-modell, iOS-versjon, app-build og commit ved hver testrunde.
 - Privat-kortet åpner privat kalender.
 - En Ny Dag-kortet starter autentisering.
 - Begge kort gir merkbar, men kort haptisk respons.
+- Innstillinger åpnes fra øverst på startskjermen.
 - Tekst og knapper er lesbare med stor tekststørrelse i iOS.
 
 ## 2. Face ID og enhetskode
@@ -45,6 +46,7 @@ Noter iPhone-modell, iOS-versjon, app-build og commit ved hver testrunde.
 - Valgt forslag fyller tittelfeltet og gir haptisk respons.
 - Tidsvelger åpnes og gir respons på pluss, minus og Ferdig.
 - Lagre er deaktivert uten tittel.
+- Valgt varslingstid vises i skjemaet.
 - Lagring returnerer til kalenderen og viser avtaleprikk.
 
 ## 5. Avtaleliste og redigering
@@ -62,19 +64,30 @@ Noter iPhone-modell, iOS-versjon, app-build og commit ved hver testrunde.
 - Privat- og arbeidsavtaler blandes ikke.
 - Reinstallasjon fjerner lokale data som forventet.
 
-## 7. Varsler
+## 7. Varslinger og innstillinger
 
-Bruk en avtale mer enn to timer frem i tid.
-
-- Appen ber om varslingstillatelse ved behov.
-- Varsel er planlagt nøyaktig to timer før.
-- Varslet viser riktig tittel.
-- Standard varslingslyd spilles når iPhone-innstillingene tillater det.
-- Endret avtale kansellerer gammelt varsel og oppretter nytt.
-- Slettet avtale kansellerer varslet.
+- Alle varslingstidene kan velges og lagres.
+- Valgt varslingstid gjelder både Privat og En Ny Dag.
+- Valget Av kansellerer eksisterende planlagte varsler.
+- Endret varslingstid planlegger eksisterende lokale avtaler på nytt.
+- Importerte Opptatt-perioder fra PC får ikke varsler.
+- Testvarsel vises.
+- Standardlyd kan slås av og på.
+- Snarveien til iPhone-varsler åpner appens systeminnstillinger.
+- Varsel viser riktig tittel.
+- Test med lydløs bryter og Fokus-modus i ulike stillinger.
 - Test med appen åpen, i bakgrunnen og avsluttet.
 
-## 8. Stabilitet og grenseverdier
+## 8. Lokal PC-synk
+
+- Appen kobler til PC-en på samme private nettverk.
+- Bare tidspunkt vises som Opptatt.
+- Privatkalenderen påvirkes ikke.
+- Endrede og slettede perioder oppdateres ved ny synk.
+- Sist lagrede arbeidskalender vises når PC-en er av.
+- Feil adresse eller token gir kontrollert feilmelding.
+
+## 9. Stabilitet og grenseverdier
 
 - Tom tittel kan ikke lagres.
 - Lange titler ødelegger ikke layouten.
