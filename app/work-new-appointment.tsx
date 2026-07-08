@@ -40,8 +40,19 @@ export default function WorkNewAppointmentScreen() {
     setSaving(true);
     try {
       const startDate = combineDateAndTime(selectedDate, time);
-      const notificationId = await scheduleAppointmentNotification(title.trim(), startDate);
-      await addWorkAppointment({ id: `${Date.now()}`, title: title.trim(), startDate: startDate.toISOString(), calendarType: 'work', createdAt: new Date().toISOString(), notificationId });
+      const notificationId = await scheduleAppointmentNotification(
+        title.trim(),
+        startDate,
+        { hideContent: true },
+      );
+      await addWorkAppointment({
+        id: `${Date.now()}`,
+        title: title.trim(),
+        startDate: startDate.toISOString(),
+        calendarType: 'work',
+        createdAt: new Date().toISOString(),
+        notificationId,
+      });
       void confirmFeedback();
       router.back();
     } catch {
