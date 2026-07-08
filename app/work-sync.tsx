@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import {
   Alert,
-  Pressable,
   StyleSheet,
   Text,
   TextInput,
@@ -10,6 +9,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 import {
   getWorkSyncConnection,
@@ -63,7 +63,7 @@ export default function WorkSyncScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Tilbake" onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
         <Text style={styles.title}>PC-synk</Text>
@@ -103,6 +103,7 @@ export default function WorkSyncScreen() {
       </View>
 
       <Pressable
+        accessibilityRole="button"
         disabled={busy}
         onPress={saveAndTest}
         style={[styles.button, busy && styles.disabled]}
