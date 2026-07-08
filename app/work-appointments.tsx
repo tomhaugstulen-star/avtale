@@ -1,28 +1,25 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getWorkAppointments } from '@/src/services/workAppointmentStorage';
-import { getAppointmentsForMonth } from '@/src/utils/appointments';
-import { getMonthTitle } from '@/src/utils/calendar';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
 
-function getMonthFilter(yearValue?: string, monthValue?: string) {
-  const year = Number(yearValue);
-  const month = Number(monthValue);
-  if (!Number.isInteger(year) || !Number.isInteger(month) || month < 0 || month > 11) {
-    return null;
-  }
-  return new Date(year, month, 1);
+function getYearFilter(value?: string) {
+  const year = Number(value);
+  return Number.isInteger(year) && year >= 2000 && year <= 2100
+    ? year
+    : new Date().getFullYear();
 }
 
 export default function WorkAppointmentsScreen() {
   const router = useRouter();
-  const { month, year } = useLocalSearchParams<{ month?: string; year?: string }>();
-  const monthFilter = useMemo(() => getMonthFilter(year, month), [month, year]);
+  const { year } = useLocalSearchParams<{ year?: string }>();
+  const selectedYear = useMemo(() => getYearFilter(year), [year]);
   const [items, setItems] = useState<Appointment[]>([]);
 
   useFocusEffect(
@@ -31,16 +28,17 @@ export default function WorkAppointmentsScreen() {
     }, []),
   );
 
-  const visibleItems = monthFilter ? getAppointmentsForMonth(items, monthFilter) : items;
-  const title = monthFilter ? getMonthTitle(monthFilter) : 'Mine avtaler';
+  const visibleItems = items
+    .filter((item) => new Date(item.startDate).getFullYear() === selectedYear)
+    .sort((first, second) => first.startDate.localeCompare(second.startDate));
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}>
+        <Pressable accessibilityRole="button" accessibilityLabel="Tilbake" onPress={() => router.back()} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
-        <Text numberOfLines={1} style={styles.headerTitle}>{title}</Text>
+        <Text numberOfLines={1} style={styles.headerTitle}>Alle avtaler {selectedYear}</Text>
         <View style={styles.spacer} />
       </View>
 
@@ -48,17 +46,14 @@ export default function WorkAppointmentsScreen() {
         contentContainerStyle={styles.list}
         data={visibleItems}
         keyExtractor={(item) => item.id}
-        ListEmptyComponent={(
-          <Text style={styles.empty}>
-            {monthFilter ? 'Ingen avtaler denne måneden' : 'Ingen avtaler ennå'}
-          </Text>
-        )}
+        ListEmptyComponent={<Text style={styles.empty}>Ingen avtaler i {selectedYear}</Text>}
         renderItem={({ item }) => {
           const date = new Date(item.startDate);
           const imported = item.source === 'website';
           const appointmentTitle = imported ? item.initials || 'Opptatt' : item.title;
           return (
             <Pressable
+              accessibilityRole={imported ? undefined : 'button'}
               disabled={imported}
               onPress={() => router.push({
                 pathname: '/work-edit-appointment',
@@ -78,18 +73,29 @@ export default function WorkAppointmentsScreen() {
         }}
         showsVerticalScrollIndicator={false}
       />
+
+      <Pressable
+        accessibilityRole="button"
+        onPress={() => router.push({
+          pathname: '/work-new-appointment',
+          params: { date: new Date().toISOString() },
+        })}
+        style={styles.newButton}
+      >
+        <Text style={styles.newButtonText}>＋ Ny avtale</Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  safeArea: { backgroundColor: colors.background, flex: 1, paddingHorizontal: 18 },
+  safeArea: { backgroundColor: colors.background, flex: 1, paddingBottom: 14, paddingHorizontal: 18 },
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
   backButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 },
   backText: { color: colors.work, fontSize: 40, lineHeight: 42 },
-  headerTitle: { color: colors.textPrimary, flex: 1, fontSize: 25, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
+  headerTitle: { color: colors.textPrimary, flex: 1, fontSize: 25, fontWeight: '700', textAlign: 'center' },
   spacer: { width: 44 },
-  list: { gap: 12, paddingBottom: 24, paddingTop: 14 },
+  list: { gap: 12, paddingBottom: 18, paddingTop: 14 },
   card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 },
   cardText: { flex: 1 },
   pressed: { opacity: 0.7 },
@@ -99,4 +105,6 @@ const styles = StyleSheet.create({
   imported: { color: colors.textSecondary, fontSize: 13, marginTop: 3 },
   chevron: { color: colors.work, fontSize: 26, marginLeft: 12 },
   empty: { color: colors.textSecondary, fontSize: 20, marginTop: 32, textAlign: 'center' },
+  newButton: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 20, height: 58, justifyContent: 'center' },
+  newButtonText: { color: colors.white, fontSize: 20, fontWeight: '700' },
 });
