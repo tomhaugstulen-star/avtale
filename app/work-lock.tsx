@@ -5,6 +5,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { colors } from '@/src/constants/colors';
+import { unlockWorkSession } from '@/src/services/workSession';
 
 export default function WorkLockScreen() {
   const router = useRouter();
@@ -16,29 +17,34 @@ export default function WorkLockScreen() {
     setBusy(true);
     setMessage('');
 
-    const hasHardware = await LocalAuthentication.hasHardwareAsync();
-    const isEnrolled = await LocalAuthentication.isEnrolledAsync();
+    try {
+      const hasHardware = await LocalAuthentication.hasHardwareAsync();
+      const isEnrolled = await LocalAuthentication.isEnrolledAsync();
 
-    if (!hasHardware || !isEnrolled) {
-      setMessage('Face ID eller kode er ikke satt opp på telefonen.');
+      if (!hasHardware || !isEnrolled) {
+        setMessage('Face ID eller kode er ikke satt opp på telefonen.');
+        return;
+      }
+
+      const result = await LocalAuthentication.authenticateAsync({
+        promptMessage: 'Åpne En Ny Dag',
+        fallbackLabel: 'Bruk kode',
+        cancelLabel: 'Avbryt',
+      });
+
+      if (result.success) {
+        unlockWorkSession();
+        router.replace('/work-calendar');
+        return;
+      }
+
+      if (result.error !== 'user_cancel' && result.error !== 'system_cancel') {
+        setMessage('Kunne ikke låse opp. Prøv igjen.');
+      }
+    } catch {
+      setMessage('Kunne ikke kontrollere Face ID eller kode.');
+    } finally {
       setBusy(false);
-      return;
-    }
-
-    const result = await LocalAuthentication.authenticateAsync({
-      promptMessage: 'Åpne En Ny Dag',
-      fallbackLabel: 'Bruk kode',
-      cancelLabel: 'Avbryt',
-    });
-
-    setBusy(false);
-    if (result.success) {
-      router.replace('/work-calendar');
-      return;
-    }
-
-    if (result.error !== 'user_cancel' && result.error !== 'system_cancel') {
-      setMessage('Kunne ikke låse opp. Prøv igjen.');
     }
   }
 
@@ -49,7 +55,12 @@ export default function WorkLockScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable accessibilityRole="button" accessibilityLabel="Tilbake" onPress={() => router.back()} style={styles.backButton}>
+        <Pressable
+          accessibilityLabel="Tilbake"
+          accessibilityRole="button"
+          onPress={() => router.replace('/')}
+          style={styles.backButton}
+        >
           <Text style={styles.backText}>‹</Text>
         </Pressable>
         <Text style={styles.headerTitle}>En Ny Dag</Text>
@@ -61,7 +72,12 @@ export default function WorkLockScreen() {
         <Text style={styles.title}>Kalenderen er låst</Text>
         <Text style={styles.subtitle}>Bruk Face ID eller telefonens kode for å fortsette.</Text>
         {message ? <Text style={styles.message}>{message}</Text> : null}
-        <Pressable accessibilityRole="button" disabled={busy} onPress={unlock} style={[styles.button, busy && styles.disabled]}>
+        <Pressable
+          accessibilityRole="button"
+          disabled={busy}
+          onPress={unlock}
+          style={[styles.button, busy && styles.disabled]}
+        >
           <Text style={styles.buttonText}>{busy ? 'Kontrollerer …' : 'Lås opp'}</Text>
         </Pressable>
       </View>
