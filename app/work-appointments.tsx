@@ -29,14 +29,21 @@ export default function WorkAppointmentsScreen() {
         ListEmptyComponent={<Text style={styles.empty}>Ingen avtaler ennå</Text>}
         renderItem={({ item }) => {
           const date = new Date(item.startDate);
+          const imported = item.source === 'website';
+          const title = imported ? item.initials || 'Opptatt' : item.title;
           return (
-            <Pressable onPress={() => router.push({ pathname: '/work-edit-appointment', params: { id: item.id } })} style={styles.card}>
+            <Pressable
+              disabled={imported}
+              onPress={() => router.push({ pathname: '/work-edit-appointment', params: { id: item.id } })}
+              style={({ pressed }) => [styles.card, pressed && !imported && styles.pressed]}
+            >
               <View style={styles.cardText}>
                 <Text style={styles.date}>{formatLongDate(date)}</Text>
                 <Text style={styles.time}>{formatTime(date)}</Text>
-                <Text style={styles.itemTitle}>{item.title}</Text>
+                <Text style={styles.itemTitle}>{title}</Text>
+                {imported ? <Text style={styles.imported}>Importert fra PC</Text> : null}
               </View>
-              <Text style={styles.chevron}>{'>'}</Text>
+              {!imported ? <Text style={styles.chevron}>{'>'}</Text> : null}
             </Pressable>
           );
         }}
@@ -51,8 +58,9 @@ const styles = StyleSheet.create({
   header: { alignItems: 'center', flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 },
   backButton: { alignItems: 'center', height: 44, justifyContent: 'center', width: 44 }, backText: { color: colors.work, fontSize: 30 },
   title: { color: colors.textPrimary, fontSize: 26, fontWeight: '700' }, spacer: { width: 44 }, list: { gap: 12, paddingBottom: 24, paddingTop: 14 },
-  card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 }, cardText: { flex: 1 },
+  card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 }, cardText: { flex: 1 }, pressed: { opacity: 0.7 },
   date: { color: colors.textSecondary, fontSize: 16, textTransform: 'capitalize' }, time: { color: colors.work, fontSize: 20, fontWeight: '700', marginTop: 5 },
-  itemTitle: { color: colors.textPrimary, fontSize: 22, fontWeight: '600', marginTop: 3 }, chevron: { color: colors.work, fontSize: 26, marginLeft: 12 },
+  itemTitle: { color: colors.textPrimary, fontSize: 22, fontWeight: '600', marginTop: 3 }, imported: { color: colors.textSecondary, fontSize: 13, marginTop: 3 },
+  chevron: { color: colors.work, fontSize: 26, marginLeft: 12 },
   empty: { color: colors.textSecondary, fontSize: 20, marginTop: 32, textAlign: 'center' },
 });
