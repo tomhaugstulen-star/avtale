@@ -36,6 +36,7 @@ Sist oppdatert: 2026-07-08
 - Lokal lagring
 - Valgbar varslingstid: av, 5, 15 eller 30 minutter, 1 eller 2 timer, eller 1 dag
 - Standard iPhone-lyd kan slås av og på
+- iOS-systemtoner kan ikke listes eller velges direkte i appen
 - Eksisterende lokale avtaler planlegges på nytt når varslingsinnstillingene endres
 - Haptisk respons på sentrale knapper og tidsvelger
 
