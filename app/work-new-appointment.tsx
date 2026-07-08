@@ -9,6 +9,7 @@ import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { scheduleAppointmentNotification } from '@/src/services/notificationService';
+import { formatReminder, getNotificationSettings } from '@/src/services/notificationSettings';
 import { addWorkAppointment, getWorkAppointments } from '@/src/services/workAppointmentStorage';
 import { combineDateAndTime } from '@/src/utils/appointments';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
@@ -25,11 +26,13 @@ export default function WorkNewAppointmentScreen() {
   const [title, setTitle] = useState('');
   const [time, setTime] = useState(initialTime);
   const [history, setHistory] = useState<Appointment[]>([]);
+  const [reminderText, setReminderText] = useState('2 timer før avtalen');
   const [showPicker, setShowPicker] = useState(false);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     getWorkAppointments().then(setHistory).catch(() => setHistory([]));
+    getNotificationSettings().then((settings) => setReminderText(formatReminder(settings.reminderMinutes)));
   }, []);
 
   function tap() {
@@ -67,7 +70,7 @@ export default function WorkNewAppointmentScreen() {
         </View>
         <Text style={styles.label}>Klokkeslett</Text>
         <Pressable onPressIn={tap} onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
-        <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>2 timer før avtalen</Text></View>
+        <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>{reminderText}</Text></View>
         <Pressable disabled={disabled} onPressIn={disabled ? undefined : tap} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer...' : 'Lagre avtale'}</Text></Pressable>
       </View>
       <TimePickerModal visible={showPicker} value={time} onChange={setTime} onClose={() => setShowPicker(false)} />
