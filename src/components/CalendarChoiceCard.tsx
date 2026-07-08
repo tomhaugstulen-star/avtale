@@ -1,7 +1,7 @@
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
-import { tapFeedback } from '@/src/services/feedback';
 
 type Props = {
   title: string;
@@ -16,10 +16,7 @@ export function CalendarChoiceCard({ title, accent, softBackground, icon, onPres
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={title}
-      onPress={() => {
-        void tapFeedback();
-        onPress();
-      }}
+      onPress={onPress}
       style={({ pressed }) => [
         styles.card,
         { borderColor: accent, backgroundColor: softBackground },
@@ -30,7 +27,7 @@ export function CalendarChoiceCard({ title, accent, softBackground, icon, onPres
       <Text adjustsFontSizeToFit minimumFontScale={0.8} numberOfLines={2} style={styles.title}>
         {title}
       </Text>
-      <View style={[styles.arrowCircle, { backgroundColor: accent }]}>
+      <View style={[styles.arrowCircle, { backgroundColor: accent }]}> 
         <Text style={styles.arrow}>›</Text>
       </View>
     </Pressable>
