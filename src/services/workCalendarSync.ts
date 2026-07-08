@@ -16,6 +16,7 @@ type RemoteAppointment = {
   id: string;
   startAt: string;
   endAt: string;
+  initials?: string;
 };
 
 type RemoteCalendar = {
@@ -57,6 +58,15 @@ export async function disconnectWorkCalendar() {
   await replaceWorkAppointments(current.filter((item) => item.source !== 'website'));
 }
 
+function sanitizeInitials(value?: string) {
+  const initials = String(value ?? '')
+    .normalize('NFKC')
+    .replace(/[^\p{L}\p{N}]/gu, '')
+    .slice(0, 3)
+    .toLocaleUpperCase('nb-NO');
+  return initials || undefined;
+}
+
 function mapRemoteAppointment(item: RemoteAppointment): Appointment {
   return {
     id: `website:${item.id}`,
@@ -67,6 +77,7 @@ function mapRemoteAppointment(item: RemoteAppointment): Appointment {
     calendarType: 'work',
     createdAt: item.startAt,
     source: 'website',
+    initials: sanitizeInitials(item.initials),
   };
 }
 
