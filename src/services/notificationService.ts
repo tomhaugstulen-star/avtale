@@ -1,9 +1,19 @@
 import * as Notifications from 'expo-notifications';
 
 import type { Appointment } from '@/src/models/Appointment';
-import { getAppointments, replaceAppointments } from '@/src/services/appointmentStorage';
-import { formatReminder, getNotificationSettings, type NotificationSettings } from '@/src/services/notificationSettings';
-import { getWorkAppointments, replaceWorkAppointments } from '@/src/services/workAppointmentStorage';
+import {
+  getAppointments,
+  replaceAppointments,
+} from '@/src/services/appointmentStorage';
+import {
+  formatReminder,
+  getNotificationSettings,
+  type NotificationSettings,
+} from '@/src/services/notificationSettings';
+import {
+  getWorkAppointments,
+  replaceWorkAppointments,
+} from '@/src/services/workAppointmentStorage';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => {
@@ -17,6 +27,10 @@ Notifications.setNotificationHandler({
   },
 });
 
+type ScheduleOptions = {
+  hideContent?: boolean;
+};
+
 async function hasPermission() {
   const settings = await Notifications.getPermissionsAsync();
   if (settings.granted) return true;
@@ -29,6 +43,7 @@ async function scheduleWithSettings(
   startDate: Date,
   settings: NotificationSettings,
   permissionGranted: boolean,
+  options: ScheduleOptions = {},
 ) {
   if (settings.reminderMinutes === null || !permissionGranted) return undefined;
   const triggerDate = new Date(startDate.getTime() - settings.reminderMinutes * 60_000);
@@ -38,17 +53,24 @@ async function scheduleWithSettings(
   return Notifications.scheduleNotificationAsync({
     content: {
       title: `Avtale om ${reminder}`,
-      body: title,
+      body: options.hideContent ? 'En Ny Dag' : title,
       ...(settings.soundEnabled ? { sound: 'default' as const } : {}),
     },
-    trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: triggerDate },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.DATE,
+      date: triggerDate,
+    },
   });
 }
 
-export async function scheduleAppointmentNotification(title: string, startDate: Date) {
+export async function scheduleAppointmentNotification(
+  title: string,
+  startDate: Date,
+  options: ScheduleOptions = {},
+) {
   const settings = await getNotificationSettings();
   const permissionGranted = settings.reminderMinutes !== null && await hasPermission();
-  return scheduleWithSettings(title, startDate, settings, permissionGranted);
+  return scheduleWithSettings(title, startDate, settings, permissionGranted, options);
 }
 
 export async function cancelAppointmentNotification(id?: string) {
@@ -73,6 +95,7 @@ async function rescheduleItems(
       new Date(item.startDate),
       settings,
       permissionGranted,
+      { hideContent: item.calendarType === 'work' },
     );
     updated.push({ ...item, notificationId });
   }
@@ -90,11 +113,16 @@ export async function rescheduleAllAppointmentNotifications() {
 
 export async function sendTestNotification(settings?: NotificationSettings) {
   const activeSettings = settings ?? await getNotificationSettings();
-  if (!(await hasPermission())) throw new Error('Varslinger er ikke tillatt på iPhone.');
+  if (!(await hasPermission())) {
+    throw new Error('Varslinger er ikke tillatt på iPhone.');
+  }
+
   await Notifications.scheduleNotificationAsync({
     content: {
       title: 'Testvarsel fra Avtale',
-      body: activeSettings.soundEnabled ? 'Standard iPhone-lyd er valgt.' : 'Lydløs varsling er valgt.',
+      body: activeSettings.soundEnabled
+        ? 'Standard iPhone-lyd er valgt.'
+        : 'Lydløs varsling er valgt.',
       ...(activeSettings.soundEnabled ? { sound: 'default' as const } : {}),
     },
     trigger: null,
