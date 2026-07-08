@@ -60,3 +60,7 @@ export async function deleteAppointment(id: string) {
     throw new Error('Kunne ikke slette avtalen.');
   }
 }
+
+export async function replaceAppointments(items: Appointment[]) {
+  await saveAppointments(items);
+}
