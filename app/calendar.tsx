@@ -99,9 +99,9 @@ const styles = StyleSheet.create({
   monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
   monthTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '400', paddingHorizontal: 44, textAlign: 'center', textTransform: 'capitalize', width: '100%' },
   helpText: { color: colors.textSecondary, fontSize: 14, marginTop: 10, textAlign: 'center' },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 14 },
-  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 18, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  actions: { gap: 10, marginTop: 14 },
+  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 18, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
   primaryButtonText: { color: colors.white, fontSize: 17, fontWeight: '700' },
-  secondaryButton: { alignItems: 'center', borderColor: colors.private, borderRadius: 18, borderWidth: 1.5, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  secondaryButton: { alignItems: 'center', borderColor: colors.private, borderRadius: 18, borderWidth: 1.5, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
   secondaryButtonText: { color: colors.private, fontSize: 17, fontWeight: '700' },
 });
