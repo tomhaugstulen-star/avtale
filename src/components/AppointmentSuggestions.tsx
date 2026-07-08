@@ -1,9 +1,10 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { appointmentChoices } from '@/src/constants/appointmentChoices';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
-import { confirmFeedback, tapFeedback } from '@/src/services/feedback';
+import { confirmFeedback } from '@/src/services/feedback';
 
 type Props = {
   appointments: Appointment[];
@@ -45,7 +46,6 @@ export function AppointmentSuggestions({ appointments, input, accentColor, onSel
         <Pressable
           accessibilityRole="button"
           key={title.toLocaleLowerCase('nb-NO')}
-          onPressIn={() => void tapFeedback()}
           onPress={() => {
             void confirmFeedback();
             onSelect(title);
