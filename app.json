@@ -2,7 +2,7 @@
   "expo": {
     "name": "Avtale",
     "slug": "avtale",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "avtale",
@@ -26,7 +26,7 @@
         "usesNonExemptEncryption": false
       },
       "infoPlist": {
-        "NSLocalNetworkUsageDescription": "Avtale kobler til kalenderen på PC-en din når begge enhetene er på samme nettverk.",
+        "NSLocalNetworkUsageDescription": "Avtale kobler til kalenderen på PC-en din når begge enhetene er på samme private nettverk.",
         "NSAppTransportSecurity": {
           "NSAllowsLocalNetworking": true
         }
