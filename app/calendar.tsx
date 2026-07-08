@@ -1,8 +1,9 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { MonthGrid } from '@/src/components/MonthGrid';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -76,7 +77,14 @@ export default function CalendarScreen() {
         <Pressable accessibilityRole="button" onPress={openToday} style={styles.primaryButton}>
           <Text numberOfLines={1} style={styles.primaryButtonText}>Dagens avtaler</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => router.push('/appointments')} style={styles.secondaryButton}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push({
+            pathname: '/appointments',
+            params: { year: String(month.getFullYear()) },
+          })}
+          style={styles.secondaryButton}
+        >
           <Text numberOfLines={1} style={styles.secondaryButtonText}>Alle avtaler</Text>
         </Pressable>
       </View>
