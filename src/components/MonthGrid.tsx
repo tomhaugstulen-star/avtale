@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 import { getCalendarDays, weekDays } from '@/src/utils/calendar';
 
