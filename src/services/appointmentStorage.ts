@@ -1,23 +1,22 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { Appointment } from '@/src/models/Appointment';
+import {
+  normalizeAppointments,
+  parseStoredAppointments,
+} from '@/src/services/appointmentPersistence';
 
 const STORAGE_KEY = 'privateAppointments';
 
 async function saveAppointments(items: Appointment[]) {
-  const sorted = [...items].sort((a, b) =>
-    a.startDate.localeCompare(b.startDate),
-  );
-  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
+  const normalized = normalizeAppointments(items, 'private');
+  await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
 }
 
 export async function getAppointments(): Promise<Appointment[]> {
   try {
     const value = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!value) return [];
-
-    const parsed: unknown = JSON.parse(value);
-    return Array.isArray(parsed) ? parsed as Appointment[] : [];
+    return value ? parseStoredAppointments(value, 'private') : [];
   } catch (error) {
     console.error('Kunne ikke lese avtaler', error);
     throw new Error('Kunne ikke lese lagrede avtaler.');
@@ -59,4 +58,8 @@ export async function deleteAppointment(id: string) {
     console.error('Kunne ikke slette avtalen', error);
     throw new Error('Kunne ikke slette avtalen.');
   }
+}
+
+export async function replaceAppointments(items: Appointment[]) {
+  await saveAppointments(items);
 }

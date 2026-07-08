@@ -2,7 +2,7 @@
   "expo": {
     "name": "Avtale",
     "slug": "avtale",
-    "version": "0.1.0",
+    "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
     "scheme": "avtale",
@@ -10,6 +10,7 @@
     "plugins": [
       "expo-router",
       "expo-notifications",
+      "expo-secure-store",
       [
         "expo-local-authentication",
         {
@@ -20,8 +21,15 @@
     "ios": {
       "supportsTablet": false,
       "bundleIdentifier": "no.haugstulen.avtale",
+      "buildNumber": "1",
+      "config": {
+        "usesNonExemptEncryption": false
+      },
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "NSLocalNetworkUsageDescription": "Avtale kobler til kalenderen på PC-en din når begge enhetene er på samme private nettverk.",
+        "NSAppTransportSecurity": {
+          "NSAllowsLocalNetworking": true
+        }
       }
     },
     "android": {
