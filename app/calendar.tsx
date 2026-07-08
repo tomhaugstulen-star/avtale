@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { MonthGrid } from '@/src/components/MonthGrid';
+import { SelectedDayAppointments } from '@/src/components/SelectedDayAppointments';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getAppointments } from '@/src/services/appointmentStorage';
@@ -17,6 +18,9 @@ export default function CalendarScreen() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const monthTitle = getMonthTitle(month);
+  const selectedDate = selectedDay
+    ? new Date(month.getFullYear(), month.getMonth(), selectedDay, 12)
+    : null;
 
   useFocusEffect(
     useCallback(() => {
@@ -33,9 +37,8 @@ export default function CalendarScreen() {
   }
 
   function openNewAppointment() {
-    if (!selectedDay) return;
-    const date = new Date(month.getFullYear(), month.getMonth(), selectedDay, 12);
-    router.push({ pathname: '/new-appointment', params: { date: date.toISOString() } });
+    if (!selectedDate) return;
+    router.push({ pathname: '/new-appointment', params: { date: selectedDate.toISOString() } });
   }
 
   return (
@@ -60,6 +63,13 @@ export default function CalendarScreen() {
         </View>
         <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} onSelectDay={setSelectedDay} />
       </View>
+
+      <SelectedDayAppointments
+        accentColor={colors.private}
+        appointments={appointments}
+        date={selectedDate}
+        onPressAppointment={(appointment) => router.push({ pathname: '/edit-appointment', params: { id: appointment.id } })}
+      />
 
       <View style={styles.actions}>
         <Pressable accessibilityRole="button" accessibilityLabel="Ny avtale" disabled={!selectedDay} onPress={openNewAppointment} style={[styles.primaryButton, !selectedDay && styles.disabledButton]}>
