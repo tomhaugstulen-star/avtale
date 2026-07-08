@@ -1,6 +1,8 @@
-import { Pressable, StyleSheet, Switch, Text, View } from 'react-native';
+import { StyleSheet, Switch, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
+import { tapFeedback } from '@/src/services/feedback';
 import {
   REMINDER_OPTIONS,
   type NotificationSettings,
@@ -21,6 +23,7 @@ export function ReminderSettingsCard({ settings, onChange }: ReminderProps) {
           const selected = settings.reminderMinutes === option.value;
           return (
             <Pressable
+              accessibilityRole="button"
               key={option.label}
               onPress={() => onChange({ ...settings, reminderMinutes: option.value })}
               style={[styles.option, selected && styles.optionSelected]}
@@ -53,6 +56,11 @@ export function ToggleSettingsCard({
   actionLabel,
   onAction,
 }: ToggleProps) {
+  function changeValue(nextValue: boolean) {
+    void tapFeedback().catch(() => undefined);
+    onChange(nextValue);
+  }
+
   return (
     <View style={styles.card}>
       <View style={styles.switchRow}>
@@ -60,10 +68,10 @@ export function ToggleSettingsCard({
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.help}>{description}</Text>
         </View>
-        <Switch value={value} onValueChange={onChange} />
+        <Switch value={value} onValueChange={changeValue} />
       </View>
       {actionLabel && onAction ? (
-        <Pressable onPress={onAction} style={styles.secondaryButton}>
+        <Pressable accessibilityRole="button" onPress={onAction} style={styles.secondaryButton}>
           <Text style={styles.secondaryText}>{actionLabel}</Text>
         </Pressable>
       ) : null}
@@ -82,6 +90,7 @@ export function PcSyncSettingsCard({ disconnecting, onDisconnect }: PcSyncProps)
       <Text style={styles.title}>PC-synk</Text>
       <Text style={styles.help}>Telefonen er koblet til en lokal PC.</Text>
       <Pressable
+        accessibilityRole="button"
         disabled={disconnecting}
         onPress={onDisconnect}
         style={[styles.dangerButton, disconnecting && styles.disabled]}
