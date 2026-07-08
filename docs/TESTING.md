@@ -1,105 +1,139 @@
 # Testplan for Avtale
 
-Test på fysisk iPhone med development build. Gjennomfør hele planen for både **Privat** og **En Ny Dag** der det er relevant.
+Test på fysisk iPhone med en ny development build. Gjennomfør planen for både **Privat** og **En Ny Dag** der det er relevant.
 
 ## Før testing
 
 ```powershell
-git pull
-npm install
+git checkout feature/local-calendar-sync
+git pull origin feature/local-calendar-sync
+npx expo install expo-secure-store
 npm run typecheck
-npx expo start --dev-client --clear
+npm audit --omit=dev --audit-level=high
+eas build --profile development --platform ios
 ```
 
-Noter iPhone-modell, iOS-versjon, app-build og commit ved hver testrunde.
+Installer sikkerhetsoppdatering v3 i PC-portalen. Noter iPhone-modell, iOS-versjon, app-build og commit ved hver testrunde.
 
-## 1. Startskjerm
+## 1. Startskjerm og innstillinger
 
-- Riktig hilsen vises for tidspunktet.
-- Privat-kortet åpner privat kalender.
-- En Ny Dag-kortet starter autentisering.
-- Begge kort gir merkbar, men kort haptisk respons.
-- Innstillinger åpnes fra øverst på startskjermen.
-- Tekst og knapper er lesbare med stor tekststørrelse i iOS.
+- Riktig hilsen vises.
+- Privat åpnes direkte.
+- En Ny Dag starter autentisering.
+- Innstillinger åpnes.
+- Varslingstid, lyd og haptikk kan lagres.
+- Haptikk av fjerner respons på kalenderkort, forslag og tidsvelger.
+- Testvarsel vises med valgt lydinnstilling.
+- Koble fra PC krever Face ID eller kode.
+- Avbrutt autentisering kobler ikke fra PC-en.
 
-## 2. Face ID og enhetskode
+## 2. Beskyttelse av En Ny Dag
 
-- Godkjent Face ID åpner En Ny Dag.
-- Avvist Face ID gir kontrollert resultat uten krasj.
-- Enhetskode kan brukes når Face ID ikke er tilgjengelig.
-- Tilbakeknappen returnerer til startskjermen.
+- Godkjent Face ID eller kode åpner kalenderen.
+- Avvist eller avbrutt autentisering åpner ikke kalenderen.
+- Direkte lenke til hver `work-*`-rute uten aktiv sesjon går til låseskjermen.
+- Arbeidsinnhold er skjult i appveksleren med en gang appen blir inaktiv.
+- Retur etter mindre enn 2 minutter beholder aktiv sesjon.
+- Retur etter minst 2 minutter krever ny autentisering.
+- Tilbakeknappen fra arbeidskalenderen låser sesjonen umiddelbart.
+- Appen låses korrekt etter omstart.
 
-## 3. Kalender
+## 3. Kalender og dagsliste
 
-- Dagens dato er markert.
-- Valgt dato er tydelig.
+- Dagens og valgt dato er tydelig markert.
 - Forrige og neste måned fungerer over årsskifte.
 - Datoer med avtaler viser prikk.
-- Mine avtaler åpner riktig kalenderliste.
+- Trykk på dato viser bare avtalene den dagen.
+- Dagslisten er sortert etter klokkeslett.
+- Dagslisten kan rulles når dagen har mange avtaler.
+- Lokale avtaler kan åpnes for redigering.
+- Importerte avtaler kan ikke redigeres via dagsliste, avtaleliste eller direkte lenke.
 
-## 4. Ny avtale
+## 4. Ny avtale, redigering og sletting
 
 - Valgt dato følger med til skjemaet.
-- Tittel kan skrives og redigeres.
-- Forslag vises over feltet når teksten matcher.
-- Forslag forsvinner når teksten ikke matcher.
-- Valgt forslag fyller tittelfeltet og gir haptisk respons.
-- Tidsvelger åpnes og gir respons på pluss, minus og Ferdig.
-- Lagre er deaktivert uten tittel.
+- Tom tittel kan ikke lagres.
+- Tittel, klokkeslett og forslag fungerer.
 - Valgt varslingstid vises i skjemaet.
-- Lagring returnerer til kalenderen og viser avtaleprikk.
+- Lagring oppretter bare én avtale ved raske trykk.
+- Redigering oppdaterer kalender, dagsliste og avtaleliste.
+- Sletting krever bekreftelse og avbryter planlagt varsel.
+- Norske bokstaver og lange titler ødelegger ikke layouten.
 
-## 5. Avtaleliste og redigering
+## 5. Varslinger og låseskjerm
 
-- Avtaler vises i kronologisk rekkefølge.
-- Riktig dato, klokkeslett og tittel vises.
-- Redigering oppdaterer kalender og liste.
-- Sletting krever tydelig bekreftelse.
-- Slettet avtale forsvinner fra liste og kalender.
+- Alle varslingstidene kan velges.
+- Valget **Av** kansellerer eksisterende planlagte varsler.
+- Endret tid planlegger private, lokale arbeidsavtaler og importerte perioder på nytt.
+- Privat varsel viser privat avtaletittel.
+- Arbeidsvarsel viser **En Ny Dag**, ikke tittel eller initialer.
+- Importert periode gir varsel uten klientinitialer.
+- Test med telefonen låst, appen åpen, i bakgrunnen og avsluttet.
+- Test med lydløs bryter, Fokus og planlagt sammendrag.
+- Slettet eller endret importert periode gir ikke et gammelt varsel.
 
-## 6. Lokal lagring
+## 6. Lokal PC-synk
 
-- Avtaler finnes etter at appen lukkes helt.
-- Avtaler finnes etter omstart av iPhone.
-- Privat- og arbeidsavtaler blandes ikke.
-- Reinstallasjon fjerner lokale data som forventet.
-
-## 7. Varslinger og innstillinger
-
-- Alle varslingstidene kan velges og lagres.
-- Valgt varslingstid gjelder både Privat og En Ny Dag.
-- Valget Av kansellerer eksisterende planlagte varsler.
-- Endret varslingstid planlegger eksisterende lokale avtaler på nytt.
-- Importerte Opptatt-perioder fra PC får ikke varsler.
-- Testvarsel vises.
-- Standardlyd kan slås av og på.
-- Snarveien til iPhone-varsler åpner appens systeminnstillinger.
-- Varsel viser riktig tittel.
-- Test med lydløs bryter og Fokus-modus i ulike stillinger.
-- Test med appen åpen, i bakgrunnen og avsluttet.
-
-## 8. Lokal PC-synk
-
-- Appen kobler til PC-en på samme private nettverk.
-- Bare tidspunkt vises som Opptatt.
+- Korrekt lokal adresse og token kobler til.
 - Privatkalenderen påvirkes ikke.
+- Tidspunkt og maksimalt tre initialer vises i En Ny Dag.
+- Fullt navn, notater, telefonnummer og andre klientopplysninger finnes ikke i appen.
 - Endrede og slettede perioder oppdateres ved ny synk.
 - Sist lagrede arbeidskalender vises når PC-en er av.
-- Feil adresse eller token gir kontrollert feilmelding.
+- To raske synkforsøk lager ikke doble avtaler eller varsler.
+- Synk stopper med kontrollert feil etter omtrent 10 sekunder når PC-en ikke svarer.
+- Feil token gir kontrollert melding om avvist token.
+- Offentlig IP, HTTPS, URL med `/api/calendar`, brukernavn, passord, søk eller fragment avvises.
+- Ugyldig JSON, svært stor respons, ugyldige datoer og urimelig lang avtale avvises.
+- Etter frakobling er token, importerte perioder og tilhørende varsler borte.
+- Paring fungerer fortsatt etter migrering fra en tidligere appversjon.
 
-## 9. Stabilitet og grenseverdier
+## 7. Lokal lagring og stabilitet
 
-- Tom tittel kan ikke lagres.
-- Lange titler ødelegger ikke layouten.
-- Norske bokstaver fungerer.
+- Avtaler finnes etter full lukking og omstart av iPhone.
+- Privat- og arbeidsavtaler blandes ikke.
+- Ødelagte eller feilformede lagringsdata krasjer ikke appen.
+- Reinstallasjon fjerner lokale kalenderdata som forventet.
 - Klokkeslett rundt 00:00 og 23:55 fungerer.
-- Avtaler på månedens første og siste dag fungerer.
-- Mange avtaler på samme dato gir stabil visning.
-- Rask gjentatt trykking oppretter ikke duplikater.
+- Månedens første og siste dag fungerer.
+- Mange avtaler på samme dag gir stabil visning.
+- Appen fungerer med stor tekststørrelse i iOS.
+
+## 8. PC-portalens sikkerhetskontroll
+
+Kjør fra klientportal-mappen:
+
+```powershell
+.\SJEKK-SYNKSIKKERHET.ps1
+```
+
+Kontroller at:
+
+- helsesjekken svarer
+- forespørsel uten token avvises
+- feil Origin avvises
+- kalenderdata valideres
+- serveren annonserer bare private nettverksadresser
+- konsollen skriver ikke ut paringstokenet
+
+Bytt token ved behov:
+
+```powershell
+.\NYTT-PARINGSTOKEN.ps1
+```
+
+## 9. Før App Store
+
+- GitHub-kontrollen er grønn på endelig commit.
+- `package-lock.json` inneholder SecureStore-avhengigheten og er committet.
+- Produksjonsbygg installeres via TestFlight.
+- Hele planen kjøres på TestFlight-versjonen.
+- Appikon, appnavn, buildnummer, versjon og skjermbilder er endelige.
+- Personvernerklæring er publisert.
+- App Privacy-svar samsvarer med faktisk datalagring og lokal synk.
+- Paringstoken brukt under utvikling er rotert.
 
 ## Feilrapport
-
-Bruk denne formen:
 
 ```text
 Område:
@@ -114,7 +148,7 @@ Skjer hver gang: Ja/Nei
 
 Prioritet:
 
-- **P0:** appen krasjer eller data går tapt
-- **P1:** sentral funksjon virker ikke
+- **P0:** appen krasjer, data går tapt eller beskyttet innhold åpnes uten autentisering
+- **P1:** sentral funksjon eller sikkerhetskontroll virker ikke
 - **P2:** funksjonen virker delvis eller gir feil resultat
 - **P3:** visuelt problem eller mindre friksjon
