@@ -3,14 +3,12 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
-import { getMonthTitle } from '@/src/utils/calendar';
 
 type Props = {
   date: Date;
   appointments: Appointment[];
   accentColor: string;
   onNewAppointment: () => void;
-  onOpenMonth: () => void;
   onPressAppointment?: (appointment: Appointment) => void;
 };
 
@@ -26,7 +24,6 @@ export function DayAppointmentsView({
   appointments,
   accentColor,
   onNewAppointment,
-  onOpenMonth,
   onPressAppointment,
 }: Props) {
   const items = appointments
@@ -82,22 +79,13 @@ export function DayAppointmentsView({
         showsVerticalScrollIndicator={false}
       />
 
-      <View style={styles.actions}>
-        <Pressable
-          onPress={onNewAppointment}
-          style={[styles.primaryButton, { backgroundColor: accentColor }]}
-        >
-          <Text style={styles.primaryText}>＋ Ny avtale</Text>
-        </Pressable>
-        <Pressable
-          onPress={onOpenMonth}
-          style={[styles.secondaryButton, { borderColor: accentColor }]}
-        >
-          <Text style={[styles.secondaryText, { color: accentColor }]}>
-            Alle avtaler i {getMonthTitle(date)}
-          </Text>
-        </Pressable>
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={onNewAppointment}
+        style={[styles.primaryButton, { backgroundColor: accentColor }]}
+      >
+        <Text style={styles.primaryText}>＋ Ny avtale</Text>
+      </Pressable>
     </View>
   );
 }
@@ -119,9 +107,6 @@ const styles = StyleSheet.create({
   title: { color: colors.textPrimary, fontSize: 19, fontWeight: '600' },
   source: { color: colors.textSecondary, fontSize: 13, marginTop: 3 },
   chevron: { fontSize: 30, marginLeft: 8 },
-  actions: { gap: 10, paddingTop: 4 },
   primaryButton: { alignItems: 'center', borderRadius: 20, height: 58, justifyContent: 'center' },
   primaryText: { color: colors.white, fontSize: 20, fontWeight: '700' },
-  secondaryButton: { alignItems: 'center', borderRadius: 18, borderWidth: 1.5, minHeight: 52, justifyContent: 'center', paddingHorizontal: 12 },
-  secondaryText: { fontSize: 17, fontWeight: '700', textAlign: 'center', textTransform: 'capitalize' },
 });
