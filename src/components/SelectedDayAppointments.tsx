@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -31,25 +31,27 @@ export function SelectedDayAppointments({ date, appointments, accentColor, onPre
       {items.length === 0 ? (
         <Text style={styles.empty}>Ingen avtaler denne dagen</Text>
       ) : (
-        items.map((appointment) => {
-          const canOpen = appointment.source !== 'website' && Boolean(onPressAppointment);
-          const title = appointment.source === 'website'
-            ? appointment.initials || 'Opptatt'
-            : appointment.title;
+        <ScrollView nestedScrollEnabled showsVerticalScrollIndicator={items.length > 3} style={styles.list}>
+          {items.map((appointment) => {
+            const canOpen = appointment.source !== 'website' && Boolean(onPressAppointment);
+            const title = appointment.source === 'website'
+              ? appointment.initials || 'Opptatt'
+              : appointment.title;
 
-          return (
-            <Pressable
-              disabled={!canOpen}
-              key={appointment.id}
-              onPress={() => onPressAppointment?.(appointment)}
-              style={({ pressed }) => [styles.row, pressed && canOpen && styles.pressed]}
-            >
-              <Text style={[styles.time, { color: accentColor }]}>{formatTime(new Date(appointment.startDate))}</Text>
-              <Text numberOfLines={1} style={styles.title}>{title}</Text>
-              {canOpen ? <Text style={[styles.arrow, { color: accentColor }]}>›</Text> : null}
-            </Pressable>
-          );
-        })
+            return (
+              <Pressable
+                disabled={!canOpen}
+                key={appointment.id}
+                onPress={() => onPressAppointment?.(appointment)}
+                style={({ pressed }) => [styles.row, pressed && canOpen && styles.pressed]}
+              >
+                <Text style={[styles.time, { color: accentColor }]}>{formatTime(new Date(appointment.startDate))}</Text>
+                <Text numberOfLines={1} style={styles.title}>{title}</Text>
+                {canOpen ? <Text style={[styles.arrow, { color: accentColor }]}>›</Text> : null}
+              </Pressable>
+            );
+          })}
+        </ScrollView>
       )}
     </View>
   );
@@ -59,6 +61,7 @@ const styles = StyleSheet.create({
   container: { backgroundColor: colors.surface, borderRadius: 20, marginTop: 12, padding: 14 },
   heading: { color: colors.textSecondary, fontSize: 15, fontWeight: '700', marginBottom: 8, textTransform: 'capitalize' },
   empty: { color: colors.textSecondary, fontSize: 16, paddingVertical: 8 },
+  list: { maxHeight: 152 },
   row: { alignItems: 'center', borderTopColor: '#E5E7EB', borderTopWidth: 1, flexDirection: 'row', minHeight: 48 },
   pressed: { opacity: 0.65 },
   time: { fontSize: 16, fontWeight: '700', width: 58 },
