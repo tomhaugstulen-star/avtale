@@ -1,7 +1,7 @@
-import * as Haptics from 'expo-haptics';
 import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
+import { tapFeedback } from '@/src/services/feedback';
 
 type Props = {
   title: string;
@@ -17,7 +17,7 @@ export function CalendarChoiceCard({ title, accent, softBackground, icon, onPres
       accessibilityRole="button"
       accessibilityLabel={title}
       onPress={() => {
-        void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+        void tapFeedback();
         onPress();
       }}
       style={({ pressed }) => [
