@@ -71,6 +71,7 @@ export default function AppointmentsScreen() {
             );
           }}
           showsVerticalScrollIndicator={false}
+          style={styles.list}
         />
       )}
 
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
   backText: { color: colors.private, fontSize: 40, lineHeight: 42 },
   headerTitle: { color: colors.textPrimary, flex: 1, fontSize: 25, fontWeight: '700', textAlign: 'center' },
   headerSpacer: { width: 44 },
+  list: { flex: 1 },
   listContent: { gap: 12, paddingBottom: 18, paddingTop: 14 },
   card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 },
   pressed: { opacity: 0.72 },
