@@ -1,0 +1,37 @@
+name: Quality and security
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: TypeScript check
+        run: npm run typecheck
+
+      - name: Validate Expo configuration
+        run: npx expo config --type public > /dev/null
+
+      - name: Audit production dependencies
+        run: npm audit --omit=dev --audit-level=high
