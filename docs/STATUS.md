@@ -2,16 +2,25 @@
 
 Sist oppdatert: 2026-07-08
 
+## Utgivelseskandidat
+
+- Appversjon: **1.0.0**
+- iOS bundle ID: `no.haugstulen.avtale`
+- Produksjonsprofil: App Store-distribusjon med automatisk buildnummer
+- Endelig byggkommando: `eas build --platform ios`
+
+Produksjonsbygget skal først startes når `npm run release:check` består.
+
 ## Teknisk løsning
 
 - Expo SDK 57 og React Native 0.86
 - TypeScript og Expo Router med typed routes
 - AsyncStorage for validerte kalenderdata og vanlige innstillinger
 - Expo SecureStore / iOS Keychain for paringstoken
-- `expo-notifications` for lokale varsler
-- `expo-local-authentication` for Face ID og enhetskode
-- `expo-haptics` for valgfri fysisk tilbakemelding
-- Lokal PC-bro på port 8788
+- lokale varsler med Expo Notifications
+- Face ID og enhetskode med Expo Local Authentication
+- valgfri haptisk tilbakemelding
+- lokal PC-bro på port 8788
 
 ## Implementert
 
@@ -28,10 +37,11 @@ Sist oppdatert: 2026-07-08
 
 - Månedsvisning, månedsbytte og markering av dagens dato
 - Prikker på datoer med avtaler
-- Dagsliste når en dato velges
+- Egen, rullbar side for valgt dato
+- Egen knapp for dagens avtaler
+- Filtrert liste over alle avtaler i valgt måned
 - Opprette, redigere og slette lokale avtaler
 - Skriveforslag fra standardvalg og tidligere avtaler
-- Kronologisk avtaleliste
 - Lokal lagring med validering før data brukes
 
 ### Varslinger
@@ -40,7 +50,6 @@ Sist oppdatert: 2026-07-08
 - Gjelder private, lokale arbeidsavtaler og importerte perioder
 - Eksisterende avtaler planlegges på nytt når innstillingen endres
 - Arbeidsvarsler viser bare **En Ny Dag**, ikke tittel eller initialer
-- Fokus, lydløs bryter og iOS-varslingsvalg kan påvirke levering og lyd
 
 ### En Ny Dag
 
@@ -73,28 +82,39 @@ Expo-konfigurasjonskontroll
 npm audit for høye og kritiske produksjonssårbarheter
 ```
 
-Siste sikkerhetsgjennomgang er dokumentert i [`SECURITY.md`](SECURITY.md).
-
-## Før neste enhetstest
+Lokal produksjonskontroll:
 
 ```powershell
-git checkout feature/local-calendar-sync
-git pull origin feature/local-calendar-sync
-npx expo install expo-secure-store
-npm run typecheck
-npm audit --omit=dev --audit-level=high
-eas build --profile development --platform ios
+npm run release:check
 ```
 
-`npx expo install expo-secure-store` må kjøres lokalt slik at `package-lock.json` oppdateres og committes.
+## Gjenstående før produksjonsbygg
 
-## Før produksjon
+`package-lock.json` må oppdateres lokalt etter SecureStore- og versjonsendringene:
+
+```powershell
+npx expo install expo-secure-store
+npm install
+git add package.json package-lock.json
+git commit -m "Update production dependency lockfile"
+git push origin feature/local-calendar-sync
+```
+
+Deretter:
+
+```powershell
+npm run release:check
+eas build --platform ios
+```
+
+## Før App Store-innsending
 
 - Installer sikkerhetsoppdatering v3 for PC-portalen.
-- Bytt paringstoken dersom et tidligere token kan ha blitt eksponert.
+- Roter paringstoken dersom det kan ha blitt eksponert.
 - Gjennomfør hele [`TESTING.md`](TESTING.md) på fysisk iPhone.
-- Test via TestFlight før App Store-innsending.
-- Opprett personvernerklæring og fyll ut App Privacy-svarene ut fra faktisk databehandling.
+- Test produksjonsbygget via TestFlight.
+- Publiser [`PRIVACY_POLICY.md`](PRIVACY_POLICY.md) på en offentlig URL.
+- Legg inn supportadresse og korrekte App Privacy-svar.
 
 ## Kjente begrensninger
 
@@ -106,13 +126,15 @@ eas build --profile development --platform ios
 ## Viktige filer
 
 - `app/_layout.tsx` – rutebeskyttelse, appvekslerskjul og automatisk låsing
+- `app/day-appointments.tsx` – privat dagsvisning
+- `app/work-day-appointments.tsx` – beskyttet dagsvisning for En Ny Dag
+- `src/components/DayAppointmentsView.tsx` – felles dagsliste
 - `app/settings.tsx` – innstillinger
-- `src/components/SettingsCards.tsx` – innstillingskomponenter
-- `src/components/SelectedDayAppointments.tsx` – dagsliste
 - `src/services/notificationService.ts` – lokale varsler
 - `src/services/workCalendarConnectionStore.ts` – sikker paring
 - `src/services/workCalendarSync.ts` – synkronisering
 - `src/services/workCalendarSyncValidation.ts` – nettverks- og responsvalidering
 - `src/services/appointmentPersistence.ts` – validering av lagrede avtaler
-- `src/services/workSession.ts` – aktiv arbeidsøkt
-- `docs/SECURITY.md` – sikkerhetsmodell og produksjonssjekkliste
+- `scripts/release-check.mjs` – lokal produksjonskontroll
+- `docs/SECURITY.md` – sikkerhetsmodell
+- `docs/RELEASE.md` – utgivelsessjekkliste
