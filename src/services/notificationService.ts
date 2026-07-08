@@ -34,13 +34,13 @@ async function scheduleWithSettings(
   const triggerDate = new Date(startDate.getTime() - settings.reminderMinutes * 60_000);
   if (triggerDate.getTime() <= Date.now()) return undefined;
 
-  const content = {
-    title: `Avtale ${formatReminder(settings.reminderMinutes).replace(' før avtalen', '')}`,
-    body: title,
-    ...(settings.soundEnabled ? { sound: 'default' as const } : {}),
-  };
+  const reminder = formatReminder(settings.reminderMinutes).replace(' før avtalen', '');
   return Notifications.scheduleNotificationAsync({
-    content,
+    content: {
+      title: `Avtale om ${reminder}`,
+      body: title,
+      ...(settings.soundEnabled ? { sound: 'default' as const } : {}),
+    },
     trigger: { type: Notifications.SchedulableTriggerInputTypes.DATE, date: triggerDate },
   });
 }
@@ -92,8 +92,7 @@ export async function rescheduleAllAppointmentNotifications() {
   await replaceWorkAppointments(await rescheduleItems(workItems, settings, permissionGranted));
 }
 
-export async function sendTestNotification() {
-  const settings = await getNotificationSettings();
+export async function sendTestNotification(settings: NotificationSettings) {
   if (!(await hasPermission())) throw new Error('Varslinger er ikke tillatt på iPhone.');
   await Notifications.scheduleNotificationAsync({
     content: {
