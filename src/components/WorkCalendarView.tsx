@@ -1,7 +1,8 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useMemo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { getWorkAppointments } from '@/src/services/workAppointmentStorage';
@@ -85,7 +86,14 @@ export function WorkCalendarView() {
         <Pressable accessibilityRole="button" onPress={openToday} style={styles.button}>
           <Text numberOfLines={1} style={styles.buttonText}>Dagens avtaler</Text>
         </Pressable>
-        <Pressable accessibilityRole="button" onPress={() => router.push('/work-appointments')} style={styles.secondaryButton}>
+        <Pressable
+          accessibilityRole="button"
+          onPress={() => router.push({
+            pathname: '/work-appointments',
+            params: { year: String(month.getFullYear()) },
+          })}
+          style={styles.secondaryButton}
+        >
           <Text numberOfLines={1} style={styles.secondaryText}>Alle avtaler</Text>
         </Pressable>
       </View>
