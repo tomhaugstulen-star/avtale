@@ -1,8 +1,9 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
@@ -104,7 +105,7 @@ export default function WorkEditAppointmentScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPress={() => router.back()} style={styles.headerButton}>
+          <Pressable accessibilityRole="button" accessibilityLabel="Lukk" onPress={() => router.back()} style={styles.headerButton}>
             <Text style={styles.closeText}>x</Text>
           </Pressable>
           <Text style={styles.screenTitle}>Rediger avtale</Text>
@@ -117,14 +118,15 @@ export default function WorkEditAppointmentScreen() {
         <Text style={styles.label}>Hva skal du gjøre?</Text>
         <TextInput value={title} onChangeText={setTitle} style={styles.textInput} />
         <Text style={styles.label}>Klokkeslett</Text>
-        <Pressable onPress={() => setShowPicker(true)} style={styles.timeButton}>
+        <Pressable accessibilityRole="button" onPress={() => setShowPicker(true)} style={styles.timeButton}>
           <Text style={styles.timeText}>{formatTime(time)}</Text>
           <Text style={styles.chevron}>v</Text>
         </Pressable>
-        <Pressable onPress={confirmDelete} style={styles.deleteButton}>
+        <Pressable accessibilityRole="button" onPress={confirmDelete} style={styles.deleteButton}>
           <Text style={styles.deleteText}>Slett avtale</Text>
         </Pressable>
         <Pressable
+          accessibilityRole="button"
           disabled={disabled}
           onPress={save}
           style={[styles.saveButton, disabled && styles.disabled]}
