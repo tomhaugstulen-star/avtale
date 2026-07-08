@@ -1,6 +1,6 @@
 {
   "name": "avtale",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
@@ -8,7 +8,8 @@
     "ios": "expo start --ios",
     "android": "expo start --android",
     "web": "expo start --web",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "release:check": "npm run typecheck && node scripts/release-check.mjs && npm audit --omit=dev --audit-level=high"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
