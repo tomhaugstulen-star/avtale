@@ -43,7 +43,7 @@ export default function WorkAppointmentsScreen() {
       </View>
 
       <FlatList
-        contentContainerStyle={styles.list}
+        contentContainerStyle={styles.listContent}
         data={visibleItems}
         keyExtractor={(item) => item.id}
         ListEmptyComponent={<Text style={styles.empty}>Ingen avtaler i {selectedYear}</Text>}
@@ -72,6 +72,7 @@ export default function WorkAppointmentsScreen() {
           );
         }}
         showsVerticalScrollIndicator={false}
+        style={styles.list}
       />
 
       <Pressable
@@ -95,7 +96,8 @@ const styles = StyleSheet.create({
   backText: { color: colors.work, fontSize: 40, lineHeight: 42 },
   headerTitle: { color: colors.textPrimary, flex: 1, fontSize: 25, fontWeight: '700', textAlign: 'center' },
   spacer: { width: 44 },
-  list: { gap: 12, paddingBottom: 18, paddingTop: 14 },
+  list: { flex: 1 },
+  listContent: { gap: 12, paddingBottom: 18, paddingTop: 14 },
   card: { alignItems: 'center', backgroundColor: colors.surface, borderRadius: 22, flexDirection: 'row', padding: 18 },
   cardText: { flex: 1 },
   pressed: { opacity: 0.7 },
