@@ -1,6 +1,6 @@
 # Prosjektstatus
 
-Sist oppdatert: 2026-07-04
+Sist oppdatert: 2026-07-08
 
 ## Nåværende teknisk løsning
 
@@ -22,6 +22,7 @@ Sist oppdatert: 2026-07-04
 - Haptisk respons på begge kalenderkort
 - Privat åpnes direkte
 - En Ny Dag åpnes via Face ID eller enhetskode
+- Snarvei til felles innstillinger
 
 ### Begge kalendere
 
@@ -33,14 +34,24 @@ Sist oppdatert: 2026-07-04
 - Egen skjerm for alle avtaler
 - Redigering og sletting
 - Lokal lagring
-- Lokalt varsel 2 timer før med standard iPhone-lyd
-- Avbryting og ny planlegging av varsel ved sletting eller endring
+- Valgbar varslingstid: av, 5, 15 eller 30 minutter, 1 eller 2 timer, eller 1 dag
+- Standard iPhone-lyd kan slås av og på
+- Eksisterende lokale avtaler planlegges på nytt når varslingsinnstillingene endres
 - Haptisk respons på sentrale knapper og tidsvelger
+
+### En Ny Dag og PC-synk
+
+- Lokal synk fra PC på samme private nettverk
+- Bare avtale-ID, starttid og sluttid importeres
+- Importerte perioder vises som **Opptatt**
+- Importerte perioder lagres bare i arbeidskalenderen
+- Sist synkroniserte data beholdes når PC-en er utilgjengelig
+- Importerte perioder får ikke lokale varsler
 
 ### Personvern og avgrensning
 
 - Ingen konto eller innlogging
-- Ingen server eller skytjeneste
+- Ingen sentral appserver eller skytjeneste for appdata
 - Privat- og arbeidsavtaler lagres separat
 - En Ny Dag er beskyttet av enhetens autentisering
 
@@ -57,7 +68,7 @@ npm run typecheck
 npx expo start --dev-client --clear
 ```
 
-Ny development build er bare nødvendig ved endringer i native avhengigheter eller app-konfigurasjon:
+Ny development build er nødvendig ved endringer i native avhengigheter eller app-konfigurasjon:
 
 ```powershell
 eas build --profile development --platform ios
@@ -69,10 +80,12 @@ eas build --profile development --platform ios
 - Varsler må testes med lyd, Fokus-modus og lydløs bryter i ulike stillinger.
 - Face ID må testes både ved godkjenning, avvisning og bruk av enhetskode.
 - Data må testes etter lukking, omstart og reinstallasjon av appen.
+- Lokal PC-synk må testes med PC av, annen Wi-Fi og endret IP-adresse.
 
 ## Viktige filer
 
 - `app/index.tsx` – startskjerm
+- `app/settings.tsx` – felles varslingsinnstillinger
 - `app/calendar.tsx` og `app/work-calendar.tsx` – kalendere
 - `app/new-appointment.tsx` og `app/work-new-appointment.tsx` – nye avtaler
 - `app/appointments.tsx` og `app/work-appointments.tsx` – avtalelister
@@ -80,12 +93,14 @@ eas build --profile development --platform ios
 - `src/components/TimePickerModal.tsx` – tidsvelger
 - `src/services/appointmentStorage.ts` – privat lagring
 - `src/services/workAppointmentStorage.ts` – arbeidslagring
+- `src/services/notificationSettings.ts` – felles varslingsvalg
 - `src/services/notificationService.ts` – lokale varsler
+- `src/services/workCalendarSync.ts` – lokal synk fra PC
 
 ## Kodekrav
 
 - Hold kildefiler under 150 linjer.
 - Skill skjerm, lagring og varsler i egne filer.
-- Ikke legg til konto eller server i MVP.
+- Ikke legg til konto eller sentral server i MVP.
 - Privat- og arbeidsavtaler skal holdes separat.
 - Kjør TypeScript-kontroll før commit.
