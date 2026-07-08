@@ -28,7 +28,19 @@ jobs:
         run: npm install
 
       - name: TypeScript check
-        run: npm run typecheck
+        shell: bash
+        run: |
+          set -o pipefail
+          npm run typecheck 2>&1 | tee typecheck.log
+
+      - name: Upload TypeScript report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: typecheck-report
+          path: typecheck.log
+          if-no-files-found: error
+          retention-days: 7
 
       - name: Validate Expo configuration
         run: npx expo config --type public > /dev/null
