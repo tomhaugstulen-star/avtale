@@ -102,9 +102,9 @@ const styles = StyleSheet.create({
   monthTitle: { color: colors.textPrimary, flex: 1, fontSize: 20, textAlign: 'center', textTransform: 'capitalize' },
   helpText: { color: colors.textSecondary, fontSize: 14, marginTop: 10, textAlign: 'center' },
   syncText: { color: colors.textSecondary, fontSize: 13, marginTop: 5, textAlign: 'center' },
-  actions: { flexDirection: 'row', gap: 10, marginTop: 14 },
-  button: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 18, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  actions: { gap: 10, marginTop: 14 },
+  button: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 18, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
   buttonText: { color: colors.white, fontSize: 17, fontWeight: '700' },
-  secondaryButton: { alignItems: 'center', borderColor: colors.work, borderRadius: 18, borderWidth: 1.5, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  secondaryButton: { alignItems: 'center', borderColor: colors.work, borderRadius: 18, borderWidth: 1.5, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
   secondaryText: { color: colors.work, fontSize: 17, fontWeight: '700' },
 });
