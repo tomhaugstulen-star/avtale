@@ -46,6 +46,12 @@ export async function getLastWorkSync() {
   return AsyncStorage.getItem(LAST_SYNC_KEY);
 }
 
+export async function disconnectWorkCalendar() {
+  await AsyncStorage.multiRemove([CONNECTION_KEY, LAST_SYNC_KEY]);
+  const current = await getWorkAppointments();
+  await replaceWorkAppointments(current.filter((item) => item.source !== 'website'));
+}
+
 function mapRemoteAppointment(item: RemoteAppointment): Appointment {
   return {
     id: `website:${item.id}`,
