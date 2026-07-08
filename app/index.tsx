@@ -1,9 +1,10 @@
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
-import { ImageBackground, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ImageBackground, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CalendarChoiceCard } from '@/src/components/CalendarChoiceCard';
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 
 const background = require('@/assets/images/welcome-background.webp');
@@ -29,7 +30,7 @@ export default function WelcomeScreen() {
   return (
     <ImageBackground source={background} style={styles.background} resizeMode="cover">
       <SafeAreaView style={styles.safeArea}>
-        <Pressable onPress={() => router.push('/settings')} style={styles.settingsButton}>
+        <Pressable accessibilityRole="button" onPress={() => router.push('/settings')} style={styles.settingsButton}>
           <Text style={styles.settingsText}>Innstillinger</Text>
         </Pressable>
         <View style={styles.header}>
