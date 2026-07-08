@@ -70,14 +70,14 @@ export default function CalendarScreen() {
         />
       </View>
 
-      <Text style={styles.helpText}>Trykk på en dato for å se avtalene den dagen.</Text>
+      <Text style={styles.helpText}>Trykk på en dato for å se avtalene.</Text>
 
       <View style={styles.actions}>
         <Pressable accessibilityRole="button" onPress={openToday} style={styles.primaryButton}>
-          <Text style={styles.primaryButtonText}>Dagens avtaler</Text>
+          <Text numberOfLines={1} style={styles.primaryButtonText}>Dagens avtaler</Text>
         </Pressable>
         <Pressable accessibilityRole="button" onPress={() => router.push('/appointments')} style={styles.secondaryButton}>
-          <Text style={styles.secondaryButtonText}>Alle mine avtaler</Text>
+          <Text numberOfLines={1} style={styles.secondaryButtonText}>Alle avtaler</Text>
         </Pressable>
       </View>
     </SafeAreaView>
@@ -98,10 +98,10 @@ const styles = StyleSheet.create({
   nextButton: { right: 0 },
   monthArrow: { color: colors.private, fontSize: 36, lineHeight: 38 },
   monthTitle: { color: colors.textPrimary, fontSize: 20, fontWeight: '400', paddingHorizontal: 44, textAlign: 'center', textTransform: 'capitalize', width: '100%' },
-  helpText: { color: colors.textSecondary, fontSize: 15, marginTop: 14, textAlign: 'center' },
-  actions: { gap: 10, marginTop: 'auto' },
-  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 22, height: 64, justifyContent: 'center' },
-  primaryButtonText: { color: colors.white, fontSize: 22, fontWeight: '700' },
-  secondaryButton: { alignItems: 'center', borderColor: colors.private, borderRadius: 18, borderWidth: 1.5, height: 48, justifyContent: 'center' },
-  secondaryButtonText: { color: colors.private, fontSize: 18, fontWeight: '700' },
+  helpText: { color: colors.textSecondary, fontSize: 14, marginTop: 10, textAlign: 'center' },
+  actions: { flexDirection: 'row', gap: 10, marginTop: 14 },
+  primaryButton: { alignItems: 'center', backgroundColor: colors.private, borderRadius: 18, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  primaryButtonText: { color: colors.white, fontSize: 17, fontWeight: '700' },
+  secondaryButton: { alignItems: 'center', borderColor: colors.private, borderRadius: 18, borderWidth: 1.5, flex: 1, height: 52, justifyContent: 'center', paddingHorizontal: 8 },
+  secondaryButtonText: { color: colors.private, fontSize: 17, fontWeight: '700' },
 });
