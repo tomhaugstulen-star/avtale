@@ -1,5 +1,6 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
+import { FlatList, StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
 import { formatLongDate, formatTime } from '@/src/utils/dateFormat';
