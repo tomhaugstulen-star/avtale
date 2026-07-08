@@ -1,7 +1,8 @@
-import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
+import { Modal, StyleSheet, Text, View } from 'react-native';
 
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { colors } from '@/src/constants/colors';
-import { confirmFeedback, tapFeedback } from '@/src/services/feedback';
+import { confirmFeedback } from '@/src/services/feedback';
 
 type Props = {
   visible: boolean;
@@ -32,7 +33,7 @@ export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
         <View style={styles.sheet}>
           <View style={styles.header}>
             <Text style={styles.title}>Velg klokkeslett</Text>
-            <Pressable accessibilityRole="button" onPressIn={() => void tapFeedback()} onPress={close} style={styles.doneButton}>
+            <Pressable accessibilityRole="button" onPress={close} style={styles.doneButton}>
               <Text style={styles.doneText}>Ferdig</Text>
             </Pressable>
           </View>
@@ -50,17 +51,12 @@ export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
 type TimeColumnProps = { label: string; value: string; onUp: () => void; onDown: () => void };
 
 function TimeColumn({ label, value, onUp, onDown }: TimeColumnProps) {
-  function adjust(action: () => void) {
-    void tapFeedback();
-    action();
-  }
-
   return (
     <View style={styles.column}>
       <Text style={styles.columnLabel}>{label}</Text>
-      <Pressable onPress={() => adjust(onUp)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>＋</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={onUp} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>＋</Text></Pressable>
       <Text style={styles.value}>{value}</Text>
-      <Pressable onPress={() => adjust(onDown)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>−</Text></Pressable>
+      <Pressable accessibilityRole="button" onPress={onDown} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>−</Text></Pressable>
     </View>
   );
 }
