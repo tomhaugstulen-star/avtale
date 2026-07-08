@@ -1,7 +1,7 @@
-import * as Haptics from 'expo-haptics';
 import { Modal, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { colors } from '@/src/constants/colors';
+import { confirmFeedback, tapFeedback } from '@/src/services/feedback';
 
 type Props = {
   visible: boolean;
@@ -17,16 +17,12 @@ function changeTime(value: Date, hours: number, minutes: number) {
   return next;
 }
 
-function feedback() {
-  void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-}
-
 export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
   const hour = value.getHours().toString().padStart(2, '0');
   const minute = value.getMinutes().toString().padStart(2, '0');
 
   function close() {
-    void Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    void confirmFeedback();
     onClose();
   }
 
@@ -36,25 +32,14 @@ export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
         <View style={styles.sheet}>
           <View style={styles.header}>
             <Text style={styles.title}>Velg klokkeslett</Text>
-            <Pressable accessibilityRole="button" onPressIn={feedback} onPress={close} style={styles.doneButton}>
+            <Pressable accessibilityRole="button" onPressIn={() => void tapFeedback()} onPress={close} style={styles.doneButton}>
               <Text style={styles.doneText}>Ferdig</Text>
             </Pressable>
           </View>
-
           <View style={styles.pickerRow}>
-            <TimeColumn
-              label="Timer"
-              value={hour}
-              onUp={() => onChange(changeTime(value, 1, 0))}
-              onDown={() => onChange(changeTime(value, -1, 0))}
-            />
+            <TimeColumn label="Timer" value={hour} onUp={() => onChange(changeTime(value, 1, 0))} onDown={() => onChange(changeTime(value, -1, 0))} />
             <Text style={styles.separator}>:</Text>
-            <TimeColumn
-              label="Minutter"
-              value={minute}
-              onUp={() => onChange(changeTime(value, 0, 5))}
-              onDown={() => onChange(changeTime(value, 0, -5))}
-            />
+            <TimeColumn label="Minutter" value={minute} onUp={() => onChange(changeTime(value, 0, 5))} onDown={() => onChange(changeTime(value, 0, -5))} />
           </View>
         </View>
       </View>
@@ -62,29 +47,20 @@ export function TimePickerModal({ visible, value, onChange, onClose }: Props) {
   );
 }
 
-type TimeColumnProps = {
-  label: string;
-  value: string;
-  onUp: () => void;
-  onDown: () => void;
-};
+type TimeColumnProps = { label: string; value: string; onUp: () => void; onDown: () => void };
 
 function TimeColumn({ label, value, onUp, onDown }: TimeColumnProps) {
   function adjust(action: () => void) {
-    feedback();
+    void tapFeedback();
     action();
   }
 
   return (
     <View style={styles.column}>
       <Text style={styles.columnLabel}>{label}</Text>
-      <Pressable onPress={() => adjust(onUp)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}>
-        <Text style={styles.adjustText}>＋</Text>
-      </Pressable>
+      <Pressable onPress={() => adjust(onUp)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>＋</Text></Pressable>
       <Text style={styles.value}>{value}</Text>
-      <Pressable onPress={() => adjust(onDown)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}>
-        <Text style={styles.adjustText}>−</Text>
-      </Pressable>
+      <Pressable onPress={() => adjust(onDown)} style={({ pressed }) => [styles.adjustButton, pressed && styles.pressed]}><Text style={styles.adjustText}>−</Text></Pressable>
     </View>
   );
 }
