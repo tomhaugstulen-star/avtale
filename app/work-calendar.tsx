@@ -4,14 +4,20 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { WorkCalendarView } from '@/src/components/WorkCalendarView';
 import { colors } from '@/src/constants/colors';
+import { lockWorkSession } from '@/src/services/workSession';
 
 export default function WorkCalendarScreen() {
   const router = useRouter();
 
+  function closeWorkCalendar() {
+    lockWorkSession();
+    router.replace('/');
+  }
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.replace('/')} style={styles.backButton}>
+        <Pressable onPress={closeWorkCalendar} style={styles.backButton}>
           <Text style={styles.backText}>‹</Text>
         </Pressable>
         <Text style={styles.title}>En Ny Dag</Text>
