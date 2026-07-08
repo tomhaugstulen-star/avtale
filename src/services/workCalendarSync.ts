@@ -110,6 +110,7 @@ async function performSync(): Promise<SyncResult> {
       const notificationId = await scheduleAppointmentNotification(
         'Opptatt',
         new Date(mapped.startDate),
+        { hideContent: true },
       );
       if (notificationId) newNotificationIds.push(notificationId);
       imported.push({ ...mapped, notificationId });
