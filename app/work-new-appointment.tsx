@@ -1,13 +1,14 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { useEffect, useMemo, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { AppointmentSuggestions } from '@/src/components/AppointmentSuggestions';
+import { HapticPressable as Pressable } from '@/src/components/HapticPressable';
 import { TimePickerModal } from '@/src/components/TimePickerModal';
 import { colors } from '@/src/constants/colors';
 import type { Appointment } from '@/src/models/Appointment';
-import { confirmFeedback, tapFeedback } from '@/src/services/feedback';
+import { confirmFeedback } from '@/src/services/feedback';
 import { scheduleAppointmentNotification } from '@/src/services/notificationService';
 import { formatReminder, getNotificationSettings } from '@/src/services/notificationSettings';
 import { addWorkAppointment, getWorkAppointments } from '@/src/services/workAppointmentStorage';
@@ -66,7 +67,7 @@ export default function WorkNewAppointmentScreen() {
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
         <View style={styles.header}>
-          <Pressable onPressIn={() => void tapFeedback()} onPress={() => router.back()} style={styles.headerButton}><Text style={styles.closeText}>x</Text></Pressable>
+          <Pressable accessibilityRole="button" accessibilityLabel="Lukk" onPress={() => router.back()} style={styles.headerButton}><Text style={styles.closeText}>x</Text></Pressable>
           <Text style={styles.screenTitle}>Ny avtale</Text><View style={styles.headerButton} />
         </View>
         <View style={styles.dateCard}><Text style={styles.dateLabel}>Dato</Text><Text style={styles.dateText}>{formatLongDate(selectedDate)}</Text></View>
@@ -76,9 +77,9 @@ export default function WorkNewAppointmentScreen() {
           <AppointmentSuggestions appointments={history} input={title} accentColor={colors.work} onSelect={setTitle} />
         </View>
         <Text style={styles.label}>Klokkeslett</Text>
-        <Pressable onPressIn={() => void tapFeedback()} onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
+        <Pressable accessibilityRole="button" onPress={() => setShowPicker(true)} style={styles.timeButton}><Text style={styles.timeText}>{formatTime(time)}</Text><Text style={styles.chevron}>v</Text></Pressable>
         <View style={styles.noticeCard}><Text style={styles.noticeTitle}>Du får varsel</Text><Text style={styles.noticeText}>{reminderText}</Text></View>
-        <Pressable disabled={disabled} onPressIn={disabled ? undefined : () => void tapFeedback()} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer...' : 'Lagre avtale'}</Text></Pressable>
+        <Pressable accessibilityRole="button" disabled={disabled} onPress={save} style={[styles.saveButton, disabled && styles.disabled]}><Text style={styles.saveText}>{saving ? 'Lagrer...' : 'Lagre avtale'}</Text></Pressable>
       </View>
       <TimePickerModal visible={showPicker} value={time} onChange={setTime} onClose={() => setShowPicker(false)} />
     </SafeAreaView>
