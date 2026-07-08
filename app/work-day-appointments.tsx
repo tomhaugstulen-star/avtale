@@ -52,13 +52,6 @@ export default function WorkDayAppointmentsScreen() {
           pathname: '/work-new-appointment',
           params: { date: date.toISOString() },
         })}
-        onOpenMonth={() => router.push({
-          pathname: '/work-appointments',
-          params: {
-            month: String(date.getMonth()),
-            year: String(date.getFullYear()),
-          },
-        })}
         onPressAppointment={(appointment) => router.push({
           pathname: '/work-edit-appointment',
           params: { id: appointment.id },
