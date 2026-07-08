@@ -68,10 +68,6 @@ async function rescheduleItems(
   const updated: Appointment[] = [];
   for (const item of items) {
     await cancelAppointmentNotification(item.notificationId);
-    if (item.source === 'website') {
-      updated.push({ ...item, notificationId: undefined });
-      continue;
-    }
     const notificationId = await scheduleWithSettings(
       item.title,
       new Date(item.startDate),
