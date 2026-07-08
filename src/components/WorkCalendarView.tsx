@@ -9,6 +9,7 @@ import { getWorkSyncConnection, syncWorkCalendar } from '@/src/services/workCale
 import { getAppointmentsForMonth, getMarkedDays } from '@/src/utils/appointments';
 import { getMonthTitle } from '@/src/utils/calendar';
 import { MonthGrid } from './MonthGrid';
+import { SelectedDayAppointments } from './SelectedDayAppointments';
 
 export function WorkCalendarView() {
   const router = useRouter();
@@ -17,6 +18,9 @@ export function WorkCalendarView() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [syncText, setSyncText] = useState('');
+  const selectedDate = selectedDay
+    ? new Date(month.getFullYear(), month.getMonth(), selectedDay, 12)
+    : null;
 
   const loadAppointments = useCallback(async () => {
     const connection = await getWorkSyncConnection();
@@ -42,9 +46,8 @@ export function WorkCalendarView() {
   }
 
   function openNewAppointment() {
-    if (!selectedDay) return;
-    const date = new Date(month.getFullYear(), month.getMonth(), selectedDay, 12);
-    router.push({ pathname: '/work-new-appointment', params: { date: date.toISOString() } });
+    if (!selectedDate) return;
+    router.push({ pathname: '/work-new-appointment', params: { date: selectedDate.toISOString() } });
   }
 
   return (
@@ -57,6 +60,14 @@ export function WorkCalendarView() {
         </View>
         <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} accentColor={colors.work} onSelectDay={setSelectedDay} />
       </View>
+
+      <SelectedDayAppointments
+        accentColor={colors.work}
+        appointments={appointments}
+        date={selectedDate}
+        onPressAppointment={(appointment) => router.push({ pathname: '/work-edit-appointment', params: { id: appointment.id } })}
+      />
+
       {!!syncText && <Text style={styles.syncText}>{syncText}</Text>}
       <View style={styles.actions}>
         <Pressable disabled={!selectedDay} onPress={openNewAppointment} style={[styles.button, !selectedDay && styles.disabled]}><Text style={styles.buttonText}>Ny avtale</Text></Pressable>
