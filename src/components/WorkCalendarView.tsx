@@ -9,7 +9,6 @@ import { getWorkSyncConnection, syncWorkCalendar } from '@/src/services/workCale
 import { getAppointmentsForMonth, getMarkedDays } from '@/src/utils/appointments';
 import { getMonthTitle } from '@/src/utils/calendar';
 import { MonthGrid } from './MonthGrid';
-import { SelectedDayAppointments } from './SelectedDayAppointments';
 
 export function WorkCalendarView() {
   const router = useRouter();
@@ -18,9 +17,6 @@ export function WorkCalendarView() {
   const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [syncText, setSyncText] = useState('');
-  const selectedDate = selectedDay
-    ? new Date(month.getFullYear(), month.getMonth(), selectedDay, 12)
-    : null;
 
   const loadAppointments = useCallback(async () => {
     const connection = await getWorkSyncConnection();
@@ -36,7 +32,7 @@ export function WorkCalendarView() {
     getWorkAppointments().then(setAppointments).catch(() => setAppointments([]));
   }, []);
 
-  useFocusEffect(useCallback(() => { loadAppointments(); }, [loadAppointments]));
+  useFocusEffect(useCallback(() => { void loadAppointments(); }, [loadAppointments]));
 
   const markedDays = getMarkedDays(getAppointmentsForMonth(appointments, month));
 
@@ -45,34 +41,56 @@ export function WorkCalendarView() {
     setSelectedDay(null);
   }
 
-  function openNewAppointment() {
-    if (!selectedDate) return;
-    router.push({ pathname: '/work-new-appointment', params: { date: selectedDate.toISOString() } });
+  function openDay(day: number) {
+    setSelectedDay(day);
+    const date = new Date(month.getFullYear(), month.getMonth(), day, 12);
+    router.push({
+      pathname: '/work-day-appointments',
+      params: { date: date.toISOString() },
+    });
+  }
+
+  function openToday() {
+    router.push({
+      pathname: '/work-day-appointments',
+      params: { date: today.toISOString() },
+    });
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.card}>
         <View style={styles.monthHeader}>
-          <Pressable onPress={() => changeMonth(-1)} style={styles.arrowButton}><Text style={styles.arrowText}>{'<'}</Text></Pressable>
+          <Pressable onPress={() => changeMonth(-1)} style={styles.arrowButton}>
+            <Text style={styles.arrowText}>{'<'}</Text>
+          </Pressable>
           <Text style={styles.monthTitle}>{getMonthTitle(month)}</Text>
-          <Pressable onPress={() => changeMonth(1)} style={styles.arrowButton}><Text style={styles.arrowText}>{'>'}</Text></Pressable>
+          <Pressable onPress={() => changeMonth(1)} style={styles.arrowButton}>
+            <Text style={styles.arrowText}>{'>'}</Text>
+          </Pressable>
         </View>
-        <MonthGrid month={month} selectedDay={selectedDay} markedDays={markedDays} accentColor={colors.work} onSelectDay={setSelectedDay} />
+        <MonthGrid
+          month={month}
+          selectedDay={selectedDay}
+          markedDays={markedDays}
+          accentColor={colors.work}
+          onSelectDay={openDay}
+        />
       </View>
 
-      <SelectedDayAppointments
-        accentColor={colors.work}
-        appointments={appointments}
-        date={selectedDate}
-        onPressAppointment={(appointment) => router.push({ pathname: '/work-edit-appointment', params: { id: appointment.id } })}
-      />
-
+      <Text style={styles.helpText}>Trykk på en dato for å se avtalene den dagen.</Text>
       {!!syncText && <Text style={styles.syncText}>{syncText}</Text>}
+
       <View style={styles.actions}>
-        <Pressable disabled={!selectedDay} onPress={openNewAppointment} style={[styles.button, !selectedDay && styles.disabled]}><Text style={styles.buttonText}>Ny avtale</Text></Pressable>
-        <Pressable onPress={() => router.push('/work-appointments')} style={styles.secondaryButton}><Text style={styles.secondaryText}>Mine avtaler</Text></Pressable>
-        <Pressable onPress={() => router.push('/work-sync')} style={styles.syncButton}><Text style={styles.syncButtonText}>PC-synk</Text></Pressable>
+        <Pressable onPress={openToday} style={styles.button}>
+          <Text style={styles.buttonText}>Dagens avtaler</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push('/work-appointments')} style={styles.secondaryButton}>
+          <Text style={styles.secondaryText}>Alle mine avtaler</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push('/work-sync')} style={styles.syncButton}>
+          <Text style={styles.syncButtonText}>PC-synk</Text>
+        </Pressable>
       </View>
     </View>
   );
@@ -85,11 +103,11 @@ const styles = StyleSheet.create({
   arrowButton: { alignItems: 'center', height: 42, justifyContent: 'center', width: 44 },
   arrowText: { color: colors.work, fontSize: 30 },
   monthTitle: { color: colors.textPrimary, fontSize: 20, textTransform: 'capitalize' },
+  helpText: { color: colors.textSecondary, fontSize: 15, marginTop: 14, textAlign: 'center' },
   syncText: { color: colors.textSecondary, fontSize: 13, marginTop: 8, textAlign: 'center' },
   actions: { gap: 10, marginTop: 'auto' },
   button: { alignItems: 'center', backgroundColor: colors.work, borderRadius: 22, height: 64, justifyContent: 'center' },
-  disabled: { opacity: 0.45 },
-  buttonText: { color: colors.white, fontSize: 24, fontWeight: '700' },
+  buttonText: { color: colors.white, fontSize: 22, fontWeight: '700' },
   secondaryButton: { alignItems: 'center', borderColor: colors.work, borderRadius: 18, borderWidth: 1.5, height: 48, justifyContent: 'center' },
   secondaryText: { color: colors.work, fontSize: 18, fontWeight: '700' },
   syncButton: { alignItems: 'center', height: 40, justifyContent: 'center' },
