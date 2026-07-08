@@ -1,10 +1,21 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
+import {
+  Alert,
+  Pressable,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 
 import { colors } from '@/src/constants/colors';
-import { getWorkSyncConnection, saveWorkSyncConnection, syncWorkCalendar } from '@/src/services/workCalendarSync';
+import {
+  getWorkSyncConnection,
+  saveWorkSyncConnection,
+  syncWorkCalendar,
+} from '@/src/services/workCalendarSync';
 
 export default function WorkSyncScreen() {
   const router = useRouter();
@@ -13,18 +24,26 @@ export default function WorkSyncScreen() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    getWorkSyncConnection().then((connection) => {
-      if (!connection) return;
-      setBaseUrl(connection.baseUrl);
-      setToken(connection.token);
-    });
+    getWorkSyncConnection()
+      .then((connection) => {
+        if (!connection) return;
+        setBaseUrl(connection.baseUrl);
+        setToken(connection.token);
+      })
+      .catch(() => {
+        Alert.alert('Kunne ikke lese paringen', 'Koble appen til PC-en på nytt.');
+      });
   }, []);
 
   async function saveAndTest() {
     if (!baseUrl.trim() || !token.trim()) {
-      Alert.alert('Mangler informasjon', 'Fyll inn PC-adresse og token fra KALENDER-PARING.txt.');
+      Alert.alert(
+        'Mangler informasjon',
+        'Fyll inn PC-adresse og token fra KALENDER-PARING.txt.',
+      );
       return;
     }
+
     setBusy(true);
     try {
       await saveWorkSyncConnection({ baseUrl, token });
@@ -32,7 +51,10 @@ export default function WorkSyncScreen() {
       Alert.alert('Synkronisert', `${result.count} tidspunkt ble hentet fra PC-en.`);
       router.back();
     } catch (error) {
-      Alert.alert('Kunne ikke koble til PC-en', error instanceof Error ? error.message : 'Ukjent feil.');
+      Alert.alert(
+        'Kunne ikke koble til PC-en',
+        error instanceof Error ? error.message : 'Ukjent feil.',
+      );
     } finally {
       setBusy(false);
     }
@@ -41,18 +63,54 @@ export default function WorkSyncScreen() {
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
-        <Pressable onPress={() => router.back()} style={styles.backButton}><Text style={styles.backText}>‹</Text></Pressable>
+        <Pressable onPress={() => router.back()} style={styles.backButton}>
+          <Text style={styles.backText}>‹</Text>
+        </Pressable>
         <Text style={styles.title}>PC-synk</Text>
         <View style={styles.spacer} />
       </View>
+
       <View style={styles.card}>
         <Text style={styles.label}>PC-adresse</Text>
-        <TextInput autoCapitalize="none" autoCorrect={false} keyboardType="url" onChangeText={setBaseUrl} placeholder="http://192.168.1.50:8787" style={styles.input} value={baseUrl} />
+        <TextInput
+          autoCapitalize="none"
+          autoCorrect={false}
+          keyboardType="url"
+          onChangeText={setBaseUrl}
+          placeholder="http://192.168.0.102:8788"
+          spellCheck={false}
+          style={styles.input}
+          value={baseUrl}
+        />
+
         <Text style={styles.label}>Token</Text>
-        <TextInput autoCapitalize="none" autoCorrect={false} onChangeText={setToken} placeholder="Token fra KALENDER-PARING.txt" secureTextEntry style={styles.input} value={token} />
-        <Text style={styles.help}>PC og iPhone må være på samme private nettverk. Nettsiden og kalenderbroen må kjøre på PC-en.</Text>
+        <TextInput
+          autoCapitalize="none"
+          autoComplete="off"
+          autoCorrect={false}
+          onChangeText={setToken}
+          placeholder="Token fra KALENDER-PARING.txt"
+          secureTextEntry
+          spellCheck={false}
+          style={styles.input}
+          textContentType="password"
+          value={token}
+        />
+
+        <Text style={styles.help}>
+          Bare lokale adresser på privat nettverk godtas. Tokenet lagres i telefonens sikre nøkkellager.
+        </Text>
       </View>
-      <Pressable disabled={busy} onPress={saveAndTest} style={[styles.button, busy && styles.disabled]}><Text style={styles.buttonText}>{busy ? 'Kobler til …' : 'Lagre og synkroniser'}</Text></Pressable>
+
+      <Pressable
+        disabled={busy}
+        onPress={saveAndTest}
+        style={[styles.button, busy && styles.disabled]}
+      >
+        <Text style={styles.buttonText}>
+          {busy ? 'Kobler til …' : 'Lagre og synkroniser'}
+        </Text>
+      </Pressable>
     </SafeAreaView>
   );
 }
